@@ -2,53 +2,50 @@
 
 struct listnode
 {
-	Item this;
-  struct listnode * next;
+    Item this;
+    struct listnode * next;
 };
-
-
-
 
 ListNode* AddNodeToListHead(ListNode *head, Item this)
 {
-  ListNode * new = (ListNode *)malloc(sizeof(ListNode));
-  VerifyMalloc( (Item) new );
-  new->this = this;
-  new->next=head;
-  head = new;
-
-  return head;
+    ListNode * new = (ListNode *)malloc(sizeof(ListNode));
+    VerifyMalloc( (Item) new );
+    new->this = this;
+    new->next=head;
+    head = new;
+    
+    return head;
 }
 
 
 Item getItemLinkedList(ListNode * node)
 {
-  /* Check if node is not empty                                   */
-  if(node == NULL)
-    return NULL;
-
-  return node->this;
+    /* Check if node is not empty                                   */
+    if(node == NULL)
+        return NULL;
+    
+    return node->this;
 }
 
 void freeLinkedList(ListNode * head)
 {
-  ListNode * next;
-  ListNode * aux;
-
-  /* Cycle from the first to the last element                     */
-  for(aux = head; aux != NULL; aux = next)
-  {
-    /* Keep trace of the next node                                */
-    next = aux->next;
-
-    /* Free current item                                          */
-		free(aux->this);
-
-    /* Free current node                                          */
-    free(aux);
-  }
-
-  return;
+    ListNode * next;
+    ListNode * aux;
+    
+    /* Cycle from the first to the last element                     */
+    for(aux = head; aux != NULL; aux = next)
+    {
+        /* Keep trace of the next node                                */
+        next = aux->next;
+        
+        /* Free current item                                          */
+        free(aux->this);
+        
+        /* Free current node                                          */
+        free(aux);
+    }
+    
+    return;
 }
 
 /*
@@ -67,13 +64,13 @@ void freeLinkedList(ListNode * head)
  */
 int lengthLinkedList(ListNode * head)
 {
-  ListNode * aux;
-  int counter;
-
-  /* Length determination cycle                                   */
-  for(aux = head, counter = 0;aux!=NULL;counter++, aux = aux->next);
-
-  return counter;
+    ListNode * aux;
+    int counter;
+    
+    /* Length determination cycle                                   */
+    for(aux = head, counter = 0;aux!=NULL;counter++, aux = aux->next);
+    
+    return counter;
 }
 
 /*
@@ -94,5 +91,45 @@ int lengthLinkedList(ListNode * head)
  */
 ListNode * getNextNodeLinkedList(ListNode * node)
 {
-  return ((node == NULL) ? NULL : node->next);
+    return ((node == NULL) ? NULL : node->next);
+}
+
+/******************************************************************************
+ * insertSortedLinkedList
+ *
+ * Arguments: head - pointer to the current head
+ *            this - item to insert in the list
+ *
+ * Returns: head of the list
+ *
+ *****************************************************************************/
+ListNode * insertSortedLinkedList(ListNode * head, Item this)
+{
+    ListNode * new, * aux;
+    
+    /* Memory allocation                                            */
+    new = (ListNode *) malloc(sizeof(ListNode));
+    VerifyMalloc( (Item) new );
+    
+    new->this = this;
+    
+    /*If the list has 0 elements or the item to insert is lower than the first in the current list */
+    if(head == NULL || ( GetEventTime( (Event) head ) > GetEventTime( (Event) this ) ) )
+    {
+        new->next = head;
+        head = new;
+        return head;
+    }
+    
+    aux = head;
+    
+    while( ( GetEventTime( (Event) aux->next ) < GetEventTime( (Event) this ) ) && aux->next != NULL )
+    {
+        aux = aux->next;
+    }
+    
+    new->next = aux->next;
+    aux->next = new;
+    
+    return head;
 }

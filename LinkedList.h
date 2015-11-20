@@ -7,3 +7,4 @@ void freeLinkedList(ListNode * first);
 int lengthLinkedList(ListNode * first);
 ListNode * getNextNodeLinkedList(ListNode * node);
 Item getItemLinkedList(ListNode * node);
+ListNode * insertSortedLinkedList(ListNode *, Item);
