@@ -22,6 +22,7 @@ Array InitAdj(int vertices, char *** matrix, Array decoder, int col, int row, in
 
     for(i=0; i<vertices; i++)
     {
+        listhead = NULL;
 
         x = GetIP_Coord(i, 'x', decoder);       /*Gets the first int of the InterestPoint i in the array */
         y = GetIP_Coord(i, 'y', decoder);			  /*Gets the second int of the InterestPoint i in the array */
