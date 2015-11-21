@@ -10,6 +10,11 @@ struct parkinglot
 };
 
 
+Graph* GetPLGraph(ParkingLot* parkinglot)
+{
+    return (parkinglot->g);
+}
+
 /******************************************************************************
  * InitParkingLot
  *
@@ -24,13 +29,13 @@ ParkingLot * InitParkingLot( FILE * mapconfig, int col, int row, int floors, int
     char *** matrix;
     int *vertices, i, *ramps;
     ParkingLot * parkinglot;
-    
+
     vertices = (int*)malloc(sizeof(int));
     VerifyMalloc( (Item) vertices );
-    
+
     ramps = (int*)malloc(sizeof(int));
     VerifyMalloc( (Item) ramps );
-    
+
     parkinglot = (ParkingLot*) malloc( sizeof(ParkingLot) );
     VerifyMalloc((Item) parkinglot);
     matrix = MatrixInit(vertices, ramps, mapconfig, col, row, floors); /*Creates string cointaining the map - its a 3d string */
@@ -38,14 +43,10 @@ ParkingLot * InitParkingLot( FILE * mapconfig, int col, int row, int floors, int
     parkinglot->g = GraphInit(*vertices, matrix, parkinglot->graphdecoder, col, row, floors);
     parkinglot->accesses = InitAccesses(accesses, parkinglot->graphdecoder, *vertices);
     parkinglot->ramps = InitRamps(*ramps, parkinglot->graphdecoder, *vertices);
-    
-    for(i=0;i<accesses;i++)
-    {
-        printf("%d\n", (parkinglot->accesses)[i]);
-    }
-    
+
+    //PrintGraph(GetPLGraph(parkinglot), *vertices);  /*prints the graph in the parkinglot */
     FreeMatrix(matrix, col, row, floors);
-    
+
     return (parkinglot);
 }
 
@@ -66,22 +67,22 @@ char *** MatrixInit(int * vertices, int * ramps, FILE * mapconfig, int col, int 
     int i, a, b, c, x, y;
     int posx, posy, posz;
     char type;
-    
+
     /* Reset vertices count*/
     (*vertices) = 0;
-    
+
     /* Reset ramps count*/
     (*ramps) = 0;
-    
+
     matrix = (char ***) malloc(sizeof(char**) * col); /*Allocates memmory for the 1st dimension of the matrix*/
     VerifyMalloc( (Item) matrix );
-    
+
     for(i = 0; i < col; i++)
     {
         matrix[i]= (char**) malloc(sizeof(char*) * row);  /*Allocates memmory for the 2nd dimension of the matrix*/
         VerifyMalloc( (Item) matrix[i] );
     }
-    
+
     for(x = 0; x < col; x++)
     {
         for(y = 0; y < row; y++)
@@ -90,8 +91,8 @@ char *** MatrixInit(int * vertices, int * ramps, FILE * mapconfig, int col, int 
             VerifyMalloc( (Item) matrix[x][y] );
         }
     }
-    
-    
+
+
     /*Filling in the map*/
     for(c = 0; c < floors; c++)
     {
@@ -103,7 +104,7 @@ char *** MatrixInit(int * vertices, int * ramps, FILE * mapconfig, int col, int 
                 /*For each character b (0 to col) in the line a (0 to row)
                  put it in the floormatrix[b][a] meaning line b, collumn a*/
                 matrix[b][a][c] = string[b];
-                
+
                 if( string[b] != '@')   /*Counts the number of characteres that are NOT @ (# of vertices in the graph)*/
                     (*vertices)+=1;
                 if( string[b] == 'u' || string[b] == 'd')
@@ -126,10 +127,10 @@ char *** MatrixInit(int * vertices, int * ramps, FILE * mapconfig, int col, int 
                 }
                 matrix[posx][posy][posz] = type;
             }
-            
+
         }while(string[0]!='+');
     }
-    
+
     return (matrix);
 }
 
@@ -148,12 +149,12 @@ int * InitAccesses(int accesses, Array decoder, int vertices)
     int i, count=0;
     int * auxarray;
     char type;
-    
-    
+
+
     /*Allocates memory for the accesses array*/
     auxarray = (int *) malloc( accesses * sizeof(int) );
     VerifyMalloc((Item) auxarray);
-    
+
     for(i = 0; i < vertices; i++) /*Goes through every vertice in the decoder to see if it is or not an access */
     {
         type = GetIP_Type(i, decoder);
@@ -181,12 +182,12 @@ int * InitRamps(int ramps, Array decoder, int vertices)
     int i, count=0;
     int * auxarray;
     char type;
-    
-    
+
+
     /*Allocates memory for the ramps array*/
     auxarray = (int *) malloc( ramps * sizeof(int) );
     VerifyMalloc((Item) auxarray);
-    
+
     for(i = 0; i < vertices; i++) /*Goes through every vertice in the decoder to see if it is a ramp */
     {
         type = GetIP_Type(i, decoder);
@@ -211,15 +212,15 @@ int * InitRamps(int ramps, Array decoder, int vertices)
 void FreeMatrix(char *** matrix, int col, int row, int floors)
 {
     int x, y, z;
-    
+
     for(x=0; x < col; x++)
     {
         for(y=0; y < row; y++)
             free(matrix[x][y]);
     }
-    
+
     for(x=0; x < col; x++)
         free(matrix[x]);
-    
+
     free(matrix);
 }

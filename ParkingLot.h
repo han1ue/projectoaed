@@ -8,3 +8,4 @@ char *** MatrixInit(int*, int*, FILE *, int, int, int);
 int * InitAccesses(int, Array, int);
 int * InitRamps(int, Array, int);
 void FreeMatrix(char ***, int, int, int);
+Graph* GetPLGraph(ParkingLot*);

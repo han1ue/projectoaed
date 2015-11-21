@@ -13,7 +13,7 @@ ListNode* AddNodeToListHead(ListNode *head, Item this)
     new->this = this;
     new->next=head;
     head = new;
-    
+
     return head;
 }
 
@@ -23,7 +23,7 @@ Item getItemLinkedList(ListNode * node)
     /* Check if node is not empty                                   */
     if(node == NULL)
         return NULL;
-    
+
     return node->this;
 }
 
@@ -31,20 +31,20 @@ void freeLinkedList(ListNode * head)
 {
     ListNode * next;
     ListNode * aux;
-    
+
     /* Cycle from the first to the last element                     */
     for(aux = head; aux != NULL; aux = next)
     {
         /* Keep trace of the next node                                */
         next = aux->next;
-        
+
         /* Free current item                                          */
         free(aux->this);
-        
+
         /* Free current node                                          */
         free(aux);
     }
-    
+
     return;
 }
 
@@ -66,10 +66,10 @@ int lengthLinkedList(ListNode * head)
 {
     ListNode * aux;
     int counter;
-    
+
     /* Length determination cycle                                   */
     for(aux = head, counter = 0;aux!=NULL;counter++, aux = aux->next);
-    
+
     return counter;
 }
 
@@ -103,33 +103,56 @@ ListNode * getNextNodeLinkedList(ListNode * node)
  * Returns: head of the list
  *
  *****************************************************************************/
-ListNode * insertSortedLinkedList(ListNode * head, Item this)
+ListNode * insertSortedLinkedList(ListNode * head, Item this, int (* CompareFunction)(Item item1, Item item2, int direction), int direction)
 {
     ListNode * new, * aux;
-    
+    int a, b;
+    int thead, taux, tatual;
+
     /* Memory allocation                                            */
     new = (ListNode *) malloc(sizeof(ListNode));
     VerifyMalloc( (Item) new );
-    
+
     new->this = this;
-    
+
     /*If the list has 0 elements or the item to insert is lower than the first in the current list */
-    if(head == NULL || ( GetEventTime( (Event) head ) > GetEventTime( (Event) this ) ) )
+    if(head == NULL || (CompareFunction( (head->this), this, direction)) )
     {
         new->next = head;
         head = new;
         return head;
     }
-    
+
+
+
     aux = head;
-    
-    while( ( GetEventTime( (Event) aux->next ) < GetEventTime( (Event) this ) ) && aux->next != NULL )
+
+
+    while( aux->next != NULL && ( !(CompareFunction((aux->next->this), this, direction)) ) )
     {
         aux = aux->next;
     }
-    
+
     new->next = aux->next;
     aux->next = new;
-    
+
     return head;
+}
+
+void PrintIntList(ListNode* head)
+{
+    ListNode* aux = head;
+    int* toprint;
+
+    if(aux == NULL)
+    {
+        printf("Error. You can't print an empty list.");
+        exit(-1);
+    }
+    while(aux!=NULL)
+    {
+        toprint = (int*) (aux->this);
+        printf("%d ", *toprint);
+        aux = aux->next;
+    }
 }
