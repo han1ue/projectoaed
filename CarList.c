@@ -75,7 +75,7 @@ char * GetCarID(Car* car)
     return car->carid;
 }
 
-NodeList * RemoveCar(carlisthead, decoder, vertices, carname)
+ListNode * RemoveCar(ListNode * carlisthead, Array decoder, int vertices, char * carname)
 {
     int x, y, z;
     ListNode * aux, * aux2, *prev;
@@ -94,7 +94,7 @@ NodeList * RemoveCar(carlisthead, decoder, vertices, carname)
     ( (Car *) getItemLinkedList(aux) )->status = 3; /* Marks the car as "left the parking lot"*/
     
     aux2 = aux; /*Start looking in the list from when we stoped on the last loop */
-    while( GetCarStatus( getItemLinkedList(aux2->next) ) != 3 )
+    while( GetCarStatus( getItemLinkedList(getNextNodeLinkedList(aux2)) ) != 3 )
         aux2 = getNextNodeLinkedList(aux2);
     
     if (carlisthead = aux)
