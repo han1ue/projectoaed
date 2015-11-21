@@ -3,4 +3,4 @@
 typedef struct graph Graph;
 
 Graph *GraphInit(int, char***, Array, int, int, int);
-PrintGraph(Graph*, int);
+void PrintGraph(Graph*, int);
