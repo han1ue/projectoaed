@@ -35,7 +35,7 @@ Car* CarListInit(Event * eventlisthead, Array decoder, int vertices)
             new_car->path = NULL;
             new_car->position = 0;
             head = AddNodeToListHead(head, (Item) new_car);
-            OccupyPos(GetEventCoord(auxevent, 'x'), GetEventCoord(auxevent, 'y'), GetEventCoord(auxevent, 'z'), Array decoder, vertices) /*This funcion will mark the spot (x,y,z) as occupied in the parking lot */
+            OccupyPos(GetEventCoord(auxevent, 'x'), GetEventCoord(auxevent, 'y'), GetEventCoord(auxevent, 'z'), decoder, vertices); /*This funcion will mark the spot (x,y,z) as occupied in the parking lot */
         }
         aux = getNextNodeLinkedList(aux);
     }
