@@ -3,7 +3,7 @@
 typedef struct carstruct Car;
 
 
-Car* CarListInit(Event * eventlisthead);
-char GetCarStatus(Car* car);
-int CompareCarStatus(Item car1, Item car2, int direction);
-void PrintCarList(ListNode*);
+Car* CarListInit(Event *, Array, int);
+char GetCarStatus(Car*);
+int CompareCarStatus(Item , Item, int);
+NodeList* RemoveCar(NodeList*, Array, int);

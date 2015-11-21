@@ -9,3 +9,4 @@ char GetEventType(Event* event);
 char* GetEventCar(Event* event);
 int GetEventCoord(Event* event, char coord);
 void PrintEventList(ListNode*);
+void ExecuteEvent( ListNode *, ListNode *, int,  Array, int, char*);

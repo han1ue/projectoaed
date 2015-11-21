@@ -30,30 +30,30 @@ ListNode* EventListInit( FILE* carconfig, FILE* resconfig )
     char eventtype;
     ListNode* head = NULL;
     Event * auxevent, * auxevent2;
-
+    
     /* Goes through every car event in the carconfig file */
     while( fgets(string, MAX_STRING, carconfig) != NULL)
     {
-
+        
         /* Allocate memory for car related event */
         auxevent = (Event*) malloc( sizeof(Event) );
         VerifyMalloc( (Item) auxevent);
-
+        
         /* Count number of read variables */
         varcounter = sscanf(string, "%s %d %c %d %d %d", carid, &time, &eventtype, &x, &y, &z);
-
+        
         /* Discover lenght of car name so we can allocate memory for it */
         carnamelenght = strlen(carid);
         auxevent->carid = (char*) malloc( (carnamelenght + 1) * sizeof(char));
         VerifyMalloc( (Item) auxevent->carid);
-
+        
         /* Add the name of the car to our structure */
         strcpy( (auxevent->carid), carid );
         /*Add the eventtype and the r(estriction)flag to the structure (the flag will only be used when the event its a restriction event) */
         auxevent->eventtype = eventtype;
         auxevent->rflag = '/';
         auxevent->time = time;
-
+        
         if( varcounter == 3)			/*The event its an exit and the car was parked by Gestor */
         {
             auxevent->x = -1;
@@ -69,13 +69,13 @@ ListNode* EventListInit( FILE* carconfig, FILE* resconfig )
         else
         {
             printf("Error. Confliting types or bad data format on car config file.");
-
+            
             exit(-1);
         }
-
+        
         head = insertSortedLinkedList(head, (Item) auxevent, CompareEventTime, 1); /* direction = 1 means ascending order */
     }
-
+    
     /* Goes through every restriction event in the restriction file */
     while( fgets(string, MAX_STRING, resconfig) != NULL)
     {
@@ -84,15 +84,15 @@ ListNode* EventListInit( FILE* carconfig, FILE* resconfig )
         VerifyMalloc( (Item) auxevent);
         auxevent2 = (Event*) malloc( sizeof(Event) ); /*auxevent2 --> event that "destroys (tb)" the restriction */
         VerifyMalloc( (Item) auxevent2);
-
+        
         /* Count number of read variables */
         varcounter = sscanf(string, "%*c %d %d %d %d %d", &tinit, &tend, &x, &y, &z);
-
+        
         auxevent->eventtype = 'r'; 	/*convention for a restriction event type is 'r'*/
         auxevent2->eventtype = 'r';
         auxevent->carid = NULL; 		/*carid string has no meaning in restriction related events*/
         auxevent2->carid = NULL;
-
+        
         if( varcounter == 3 )
         {
             auxevent->time = tinit;     /* auxevent  --> event that "creates" the restriction*/
@@ -119,18 +119,18 @@ ListNode* EventListInit( FILE* carconfig, FILE* resconfig )
             auxevent->rflag = 'p';     	/* p flag means position for a position related event*/
             auxevent2->rflag = 'p';
         }
-
+        
         else
         {
             printf("Error. Confliting types or bad data format on car config file.");
             exit(-1);
         }
-
+        
         head = insertSortedLinkedList(head, (Item) auxevent, CompareEventTime, 1);
         head = insertSortedLinkedList(head, (Item) auxevent2, CompareEventTime, 1);
-
+        
     }
-
+    
     return head;
 }
 
@@ -163,7 +163,7 @@ int GetEventTime(Event *event)
 int CompareEventTime(Item event1, Item event2, int direction)
 {
     int r;
-
+    
     if (direction == 1)
     {
         if (GetEventTime((Event*) event1) > GetEventTime((Event*) event2))
@@ -220,9 +220,9 @@ void PrintEventList(ListNode* eventlisthead)
     ListNode* aux;
     Event* auxevent;
     int count = 0;
-
+    
     aux = eventlisthead;
-
+    
     while (aux != NULL)
     {
         count++;
@@ -230,4 +230,39 @@ void PrintEventList(ListNode* eventlisthead)
         printf("Event %d: %d %s %d %d %d %c %c\n", count, auxevent->time, auxevent->carid, auxevent->x, auxevent->y, auxevent->z, auxevent->eventtype, auxevent->rflag);
         aux = getNextNodeLinkedList(aux);
     }
+}
+
+ListNode* ExecuteEvent( ListNode *eventlisthead, ListNode **carlisthead, int timeunit, Array decoder, int vertices)
+{
+    
+    ListNode * aux, *prev;
+    Event* auxevent;
+    char type;
+    
+    aux = eventlisthead;
+    
+    if(aux == NULL)
+        return;
+    
+    auxevent = (Event*) getItemLinkedList(aux);
+    while( aux != NULL && (GetEventTime(auxevent) < timeunit) )
+    {
+        auxevent = (Event*) getItemLinkedList(aux);
+        type = GetEventType(auxevent);
+        
+        if (type == 'S')
+        {
+            
+            *carlisthead = RemoveCar(*carlisthead, decoder, vertices, GetEventCar(auxevent));
+            
+            mudar status, alterar pos na lista  -> precisa do decoder e da lista de carros
+                }
+        
+        prev = aux;
+        aux = getNextNodeLinkedList(aux);
+        free(prev);	/*Frees event from the list after it was processed */
+    }
+    
+    return aux;
+    
 }

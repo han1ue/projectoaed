@@ -2,28 +2,28 @@
 
 struct carstruct
 {
-  char * carid;
-  int status;  /*status 1 means active car; status 2 means already parked car; status 3 means car already left the park*/
-  Array path; /*Array that will contain the path from the entry to the access */
-  int position; /*Index of the path array that the cr is in right now */
+    char * carid;
+    int status;  /*status 1 means active car; status 2 means already parked car; status 3 means car already left the park*/
+    Array path; /*Array that will contain the path from the entry to the access */
+    int position; /*Index of the path array that the car is in right now */
 };
 
-Car* CarListInit(Event * eventlisthead)
-  {
+Car* CarListInit(Event * eventlisthead, Array decoder, int vertices)
+{
     Car * head, * new_car;
     ListNode* aux;
     Event* auxevent;
-
+    
     if(eventlisthead == NULL)
     {
         printf("The event list is empty. There are no cars to add.");
         return NULL;
     }
-
+    
+    auxevent = eventlisthead;
     head = NULL;
-    aux = eventlisthead;
-
-
+    
+    
     while (aux != NULL)
     {
         auxevent = (Event*) getItemLinkedList(aux);
@@ -35,12 +35,13 @@ Car* CarListInit(Event * eventlisthead)
             new_car->path = NULL;
             new_car->position = 0;
             head = AddNodeToListHead(head, (Item) new_car);
+            OccupyPos(GetEventCoord(auxevent, 'x'), GetEventCoord(auxevent, 'y'), GetEventCoord(auxevent, 'z'), Array decoder, vertices) /*This funcion will mark the spot (x,y,z) as occupied in the parking lot */
         }
         aux = getNextNodeLinkedList(aux);
     }
-
+    
     return head;
-  }
+}
 
 
 char GetCarStatus(Car* car)
@@ -51,7 +52,7 @@ char GetCarStatus(Car* car)
 int CompareCarStatus(Item car1, Item car2, int direction)
 {
     int r;
-
+    
     if (direction == 1)
     {
         if (GetCarStatus((Car*) car1) > GetCarStatus((Car*) car2))
@@ -69,21 +70,44 @@ int CompareCarStatus(Item car1, Item car2, int direction)
     return r;
 }
 
-
-void PrintCarList(ListNode* carlisthead)
+char * GetCarID(Car* car)
 {
-    ListNode* aux;
-    Car* auxcar;
-    int count = 0;
-
-    aux = carlisthead;
-
-    while (aux != NULL)
-    {
-        count++;
-        auxcar = (Car*) getItemLinkedList(aux);
-        printf("Car %d: %s %d %d\n", count, auxcar->carid, auxcar->status, auxcar->position);
-        aux = getNextNodeLinkedList(aux);
-    }
+    return car->carid;
 }
 
+NodeList * RemoveCar(carlisthead, decoder, vertices, carname)
+{
+    int x, y, z;
+    ListNode * aux, * aux2, *prev;
+    
+    aux = carlisthead;
+    
+    while(strcmp( GetCarID( getItemLinkedList(aux) ), carname ) != 0 )
+    {
+        prev = aux;
+        aux = getNextNodeLinkedList(aux);
+        /*Once we're out of this cicle we found the car we want to place in "the end" of the list*/
+    }
+    
+    FreePos(x, y, z, decoder, vertices); /*Removes the car from this parking slot */
+    
+    ( (Car *) getItemLinkedList(aux) )->status = 3; /* Marks the car as "left the parking lot"*/
+    
+    aux2 = aux; /*Start looking in the list from when we stoped on the last loop */
+    while( GetCarStatus( getItemLinkedList(aux2->next) ) != 3 )
+        aux2 = getNextNodeLinkedList(aux2);
+    
+    if (carlisthead = aux)
+    {
+        carlisthead = carlisthead->next;
+        aux->next = aux2->next;
+        aux2->next = aux;
+        return carlisthead;
+    }
+    
+    prev->next = aux->next;
+    
+    
+    
+    return carlisthead;
+}

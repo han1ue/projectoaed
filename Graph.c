@@ -2,9 +2,9 @@
 
 struct graph
 {
-  int v;
-  int e;
-  Array adj;
+    int v;
+    int e;
+    Array adj;
 };
 
 /******************************************************************************
@@ -19,12 +19,12 @@ struct graph
 
 Graph *GraphInit(int vertices, char *** matrix, Array decoder, int col, int row, int floors)
 {
- Graph *G = (Graph*) malloc( sizeof(Graph) ); /*antes estava sizeof(struct graph)*/
- VerifyMalloc( (Item) G );
- G->v = vertices;
- G->e = 0;
- G->adj = InitAdj(vertices, matrix, decoder, col, row, floors);
- return G;
+    Graph *G = (Graph*) malloc( sizeof(Graph) ); /*antes estava sizeof(struct graph)*/
+    VerifyMalloc( (Item) G );
+    G->v = vertices;
+    G->e = 0;
+    G->adj = InitAdj(vertices, matrix, decoder, col, row, floors);
+    return G;
 }
 
 
@@ -33,10 +33,10 @@ void PrintGraph(Graph* g, int vertices)
     int i;
     ListNode* head;
     char test;
-
+    
     printf("Do you want to print all the vertices? [y/n]");
     scanf("%c", &test);
-
+    
     if (test == 'y'){
         for (i=0; i<vertices; i++)
         {
@@ -44,7 +44,7 @@ void PrintGraph(Graph* g, int vertices)
             head = (ListNode*) GetArrayNodeItem(i, g->adj);
             PrintIntList(head);
             printf("\n");
-
+            
         }
     }
     else if (test == 'n')
@@ -59,3 +59,7 @@ void PrintGraph(Graph* g, int vertices)
     else printf("Not a valid answer.");
 }
 
+int GetGraphVertices(Graph *g)
+{
+    return g->v;
+}
