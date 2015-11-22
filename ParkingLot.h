@@ -9,5 +9,5 @@ int * InitAccesses(int, Array, int);
 int * InitRamps(int, Array, int);
 void FreeMatrix(char ***, int, int, int);
 Graph* GetPLGraph(ParkingLot*);
-int GetVertices(ParkingLot);
-Array GetDecoder(ParkingLot);
+int GetVertices(ParkingLot*);
+Array GetDecoder(ParkingLot*);

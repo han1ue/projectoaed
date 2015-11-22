@@ -27,12 +27,12 @@ Array GraphDecoderInit(char *** matrix, int col, int row, int floors, int vertic
 {
     Array graphdecoder;
     InterestPoint* IP;
-    
+
     int x, y, z, i = 0;
-    
-    
+
+
     graphdecoder = InitArray(vertices); /*Allocates memory for a vector of pointers to InterestPoints*/
-    
+
     /* Goes through each point on the map, if it's not a wall, add it to the graph decoder*/
     for(z = 0; z < floors; z++)
     {
@@ -40,7 +40,7 @@ Array GraphDecoderInit(char *** matrix, int col, int row, int floors, int vertic
         {
             for(x = 0; x < col; x++)
             {
-                if (floormap[x][y][z] != '@')
+                if (matrix[x][y][z] != '@')
                 {
                     IP =  (InterestPoint*) malloc( sizeof(InterestPoint) );
                     VerifyMalloc( (Item) IP );
@@ -48,7 +48,7 @@ Array GraphDecoderInit(char *** matrix, int col, int row, int floors, int vertic
                     IP->x = x;
                     IP->y = y;
                     IP->z = z;
-                    IP->type = floormap[x][y][z];
+                    IP->type = matrix[x][y][z];
                     /*Calls function that changes the item in the position i to the InterestPoint created above */
                     ModifyArrayNodeItem(i, (Item) IP, graphdecoder);
                     i++;
@@ -56,7 +56,7 @@ Array GraphDecoderInit(char *** matrix, int col, int row, int floors, int vertic
             }
         }
     }
-    
+
     return graphdecoder;
 }
 
@@ -77,7 +77,7 @@ int GetIP_Coord(int i, char coord, Array decoder)
 {
     InterestPoint * aux;
     aux = (InterestPoint *) GetArrayNodeItem(i, decoder);
-    
+
     if(coord == 'x')
         return aux->x;
     else if(coord == 'y')
@@ -105,7 +105,7 @@ char GetIP_Type(int i, Array decoder)
 {
     InterestPoint * aux;
     aux = (InterestPoint *) GetArrayNodeItem(i, decoder);
-    
+
     return aux->type;
 }
 
@@ -123,7 +123,7 @@ int * FindIP (int vertices, int x, int y, int z, Array decoder)
 {
     int * IP, i;
     IP = NULL;
-    
+
     for(i = 0; i < vertices; i++)
     {
         if( GetIP_Coord(i, 'x', decoder) == x && GetIP_Coord(i, 'y', decoder) == y && GetIP_Coord(i, 'z', decoder) == z )
@@ -134,7 +134,7 @@ int * FindIP (int vertices, int x, int y, int z, Array decoder)
             return IP;
         }
     }
-    
+
     if(IP == NULL)
     {
         printf("Error finding vertice with coordenates (x,y,z).");
@@ -142,22 +142,23 @@ int * FindIP (int vertices, int x, int y, int z, Array decoder)
     }
 }
 
-void OccupyPos(int x, int y, int z, Array decoder, int vertices)
+/*void OccupyPos(int x, int y, int z, Array decoder, int vertices)
 {
     int *IP;
-    
+
     IP = FindIP(vertices, x, y, z, decoder);
-    decoder[IP]->type = 'x';
-    
+    decoder[*IP]->type = 'x';
+
     free(IP);
 }
 
 void FreePos(int x, int y, int z, Array decoder, int vertices)
 {
     int *IP;
-    
+
     IP = FindIP(vertices, x, y, z, decoder);
-    decoder[IP]->type = '.';
-    
+    decoder[*IP]->type = '.';
+
     free(IP);
 }
+*/
