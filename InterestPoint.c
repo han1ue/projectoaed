@@ -142,23 +142,27 @@ int * FindIP (int vertices, int x, int y, int z, Array decoder)
     }
 }
 
-/*void OccupyPos(int x, int y, int z, Array decoder, int vertices)
+void OccupyPos(int x, int y, int z, Array decoder, int vertices)
 {
-    int *IP;
+    int *index;
+    InterestPoint * IP;
 
-    IP = FindIP(vertices, x, y, z, decoder);
-    decoder[*IP]->type = 'x';
+    index = FindIP(vertices, x, y, z, decoder);
+    IP = (InterestPoint*) decoder[*index];
+    IP->type = 'x';
 
-    free(IP);
+    free(index);
 }
 
 void FreePos(int x, int y, int z, Array decoder, int vertices)
 {
-    int *IP;
+    int *index;
+    InterestPoint * IP;
 
-    IP = FindIP(vertices, x, y, z, decoder);
-    decoder[*IP]->type = '.';
+    index = FindIP(vertices, x, y, z, decoder);
+    IP = (InterestPoint*) decoder[*index];
+    IP->type = '.';
 
-    free(IP);
+    free(index);
 }
-*/
+

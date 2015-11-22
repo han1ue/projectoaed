@@ -8,8 +8,37 @@ struct eventstruct
     int y;
     int z;
     char eventtype;
-    char rflag;
+    char flag;
 };
+
+char* GetEventCar(Event* event)
+{
+    if ( event->eventtype != 'r' ) /* if the event is car related */
+    {
+        return event->carid;
+    }
+    else
+    {
+        printf("Error. You cant get a CarId from an event that is not car related.");
+        exit (-1);
+    }
+}
+
+int GetEventCoord(Event* event, char coord)
+{
+    if(coord == 'x')
+        return event->x;
+    else if(coord == 'y')
+        return event->y;
+    else if(coord == 'z')
+        return event->z;
+    else
+    {
+        printf("Error. You can only request x, y or z.");
+        exit(-1);
+    }
+}
+
 
 
 /******************************************************************************
@@ -28,8 +57,8 @@ ListNode* EventListInit( FILE* carconfig, FILE* resconfig )
     int time, x, y, z, varcounter, carnamelenght, tinit, tend;
     int i=0;
     char eventtype;
-    ListNode* head = NULL;
-    Event * auxevent, * auxevent2;
+    ListNode* findcaraux, *head = NULL;
+    Event * auxevent, * auxevent2, *findcarauxevent;
 
     /* Goes through every car event in the carconfig file */
     while( fgets(string, MAX_STRING, carconfig) != NULL)
@@ -51,20 +80,31 @@ ListNode* EventListInit( FILE* carconfig, FILE* resconfig )
         strcpy( (auxevent->carid), carid );
         /*Add the eventtype and the r(estriction)flag to the structure (the flag will only be used when the event its a restriction event) */
         auxevent->eventtype = eventtype;
-        auxevent->rflag = '/';
         auxevent->time = time;
 
-        if( varcounter == 3)			/*The event its an exit and the car was parked by Gestor */
+        if( varcounter == 3)            /*The event its an exit and the car was parked by Gestor */
         {
-            auxevent->x = -1;
-            auxevent->y = -1;
-            auxevent->z = -1;
+            findcaraux = head;
+            while (findcaraux != NULL)
+            {
+            findcarauxevent = (Event*) getItemLinkedList(findcaraux);
+            if(strcmp(carid, GetEventCar(findcarauxevent)) == 0)
+                {
+                     auxevent->x = GetEventCoord(findcarauxevent, 'x');
+                     auxevent->y = GetEventCoord(findcarauxevent, 'y');
+                     auxevent->z = GetEventCoord(findcarauxevent, 'z');
+                     auxevent->flag = 'g';                                     /*This flag will tell us whether the car leaving was parked by gestor*/
+
+                }
+            findcaraux = getNextNodeLinkedList(findcaraux);
+            }
         }
         else if( varcounter == 6) /*The event its a car arriving or The event its an exit and the car was already parked */
         {
             auxevent->x = x;
-            auxevent->y	= y;
+            auxevent->y = y;
             auxevent->z = z;
+            auxevent->flag = '/';                /*This flag will tell us if the car was already parked*/
         }
         else
         {
@@ -80,7 +120,7 @@ ListNode* EventListInit( FILE* carconfig, FILE* resconfig )
     while( fgets(string, MAX_STRING, resconfig) != NULL)
     {
         /* Allocate memory for two restricton related events */
-        auxevent = (Event*) malloc( sizeof(Event) );	/* auxevent  --> event that "creates (ta)" the restriction*/
+        auxevent = (Event*) malloc( sizeof(Event) );    /* auxevent  --> event that "creates (ta)" the restriction*/
         VerifyMalloc( (Item) auxevent);
         auxevent2 = (Event*) malloc( sizeof(Event) ); /*auxevent2 --> event that "destroys (tb)" the restriction */
         VerifyMalloc( (Item) auxevent2);
@@ -88,36 +128,36 @@ ListNode* EventListInit( FILE* carconfig, FILE* resconfig )
         /* Count number of read variables */
         varcounter = sscanf(string, "%*c %d %d %d %d %d", &tinit, &tend, &x, &y, &z);
 
-        auxevent->eventtype = 'r'; 	/*convention for a restriction event type is 'r'*/
+        auxevent->eventtype = 'r';  /*convention for a restriction event type is 'r'*/
         auxevent2->eventtype = 'r';
-        auxevent->carid = NULL; 		/*carid string has no meaning in restriction related events*/
+        auxevent->carid = NULL;         /*carid string has no meaning in restriction related events*/
         auxevent2->carid = NULL;
 
         if( varcounter == 3 )
         {
             auxevent->time = tinit;     /* auxevent  --> event that "creates" the restriction*/
             auxevent2->time = tend;
-            auxevent->x = x;    				/*the x value (in this case) represents the floor that's gonna be restricted*/
+            auxevent->x = x;                    /*the x value (in this case) represents the floor that's gonna be restricted*/
             auxevent2->x = x;
             auxevent->y = -1;
             auxevent2->y = -1;
             auxevent->z = -1;
             auxevent2->z = -1;
-            auxevent->rflag = 'f';     /* f flag means floor, for a whole floor event*/
-            auxevent2->rflag = 'f';
+            auxevent->flag = 'f';     /* f flag means floor, for a whole floor event*/
+            auxevent2->flag = 'f';
         }
         else if( varcounter == 5 )
         {
             auxevent->time = tinit;     /* auxevent  --> event that "creates" the restriction*/
             auxevent2->time = tend;
-            auxevent->x = x;    				/*the x value (in this case) represents the floor that's gonna be restricted*/
+            auxevent->x = x;                    /*the x value (in this case) represents the floor that's gonna be restricted*/
             auxevent2->x = x;
             auxevent->y = y;
             auxevent2->y = y;
             auxevent->z = y;
             auxevent2->z = y;
-            auxevent->rflag = 'p';     	/* p flag means position for a position related event*/
-            auxevent2->rflag = 'p';
+            auxevent->flag = 'p';      /* p flag means position for a position related event*/
+            auxevent2->flag = 'p';
         }
 
         else
@@ -186,32 +226,9 @@ char GetEventType(Event* event)
     return event->eventtype;
 }
 
-char* GetEventCar(Event* event)
+char GetEventFlag(Event* event)
 {
-    if ( event->eventtype != 'r' ) /* if the event is car related */
-    {
-        return event->carid;
-    }
-    else
-    {
-        printf("Error. You cant get a CarId from an event that is not car related.");
-        exit (-1);
-    }
-}
-
-int GetEventCoord(Event* event, char coord)
-{
-    if(coord == 'x')
-        return event->x;
-    else if(coord == 'y')
-        return event->y;
-    else if(coord == 'z')
-        return event->z;
-    else
-    {
-        printf("Error. You can only request x, y or z.");
-        exit(-1);
-    }
+    return event->flag;
 }
 
 
@@ -227,12 +244,12 @@ void PrintEventList(ListNode* eventlisthead)
     {
         count++;
         auxevent = (Event*) getItemLinkedList(aux);
-        printf("Event %d: %d %s %d %d %d %c %c\n", count, auxevent->time, auxevent->carid, auxevent->x, auxevent->y, auxevent->z, auxevent->eventtype, auxevent->rflag);
+        printf("Event %d: %d %s %d %d %d %c %c\n", count, auxevent->time, auxevent->carid, auxevent->x, auxevent->y, auxevent->z, auxevent->eventtype, auxevent->flag);
         aux = getNextNodeLinkedList(aux);
     }
 }
 
-/*ListNode* ExecuteEvent( ListNode *eventlisthead, ListNode **carlisthead, int timeunit, Array decoder, int vertices)
+ListNode* ExecuteEvent( ListNode *eventlisthead, ListNode **carlisthead, int timeunit, Array decoder, int vertices)
 {
 
     ListNode * aux, *prev;
@@ -255,14 +272,14 @@ void PrintEventList(ListNode* eventlisthead)
 
             *carlisthead = RemoveCar(*carlisthead, decoder, vertices, GetEventCar(auxevent));
 
-            mudar status, alterar pos na lista  -> precisa do decoder e da lista de carros
-                }
+            //mudar status, alterar pos na lista  -> precisa do decoder e da lista de carros
+        }
 
         prev = aux;
         aux = getNextNodeLinkedList(aux);
-        free(prev);	/*Frees event from the list after it was processed */
- //   }
+        free(prev); /*Frees event from the list after it was processed */
+    }
 
-  //  return aux;
+    return aux;
 
-//}
+}

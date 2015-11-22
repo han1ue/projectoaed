@@ -26,7 +26,7 @@ Car* CarListInit(Event * eventlisthead, Array decoder, int vertices)
     while (aux != NULL)
     {
         auxevent = (Event*) getItemLinkedList(aux);
-        if(GetEventType(auxevent) == 'S' && GetEventCoord(auxevent, 'x') != -1) /*Puts the cars already parked in the car array */
+        if(GetEventType(auxevent) == 'S' && GetEventFlag(auxevent) != 'g') /*Puts the cars already parked (not put in there by gestor) in the car array */
         {
             new_car = (Car*) malloc( sizeof(Car) );
             strcpy((new_car->carid),GetEventCar(auxevent));
@@ -91,11 +91,11 @@ void PrintCarList(ListNode* carlisthead)
     }
 }
 
-/*
+
 ListNode * RemoveCar(ListNode * carlisthead, Array decoder, int vertices, char * carname)
 {
-    int x, y, z;
     ListNode * aux, * aux2, *prev;
+    Event* auxevent;
 
     aux = carlisthead;
 
@@ -104,28 +104,24 @@ ListNode * RemoveCar(ListNode * carlisthead, Array decoder, int vertices, char *
         prev = aux;
         aux = getNextNodeLinkedList(aux);
         /*Once we're out of this cicle we found the car we want to place in "the end" of the list*/
-   // }
+    }
 
-//    FreePos(x, y, z, decoder, vertices); /*Removes the car from this parking slot */
+   auxevent = (Event*)getItemLinkedList(aux);
 
-//    ( (Car *) getItemLinkedList(aux) )->status = 3; /* Marks the car as "left the parking lot"*/
+   FreePos(GetEventCoord(auxevent, 'x'), GetEventCoord(auxevent, 'y'), GetEventCoord(auxevent, 'z'), decoder, vertices); /*Removes the car from this parking slot with coords x,y,z */
 
-//    aux2 = aux; /*Start looking in the list from when we stoped on the last loop */
- /*   while( GetCarStatus( getItemLinkedList(getNextNodeLinkedList(aux2)) ) != 3 )
+   ( (Car *) getItemLinkedList(aux) )->status = 3; /* Marks the car as "left the parking lot"*/
+
+   aux2 = aux; /*Start looking in the list from when we stoped on the last loop */
+   while( GetCarStatus( getItemLinkedList(getNextNodeLinkedList(aux2)) ) != 3 )
         aux2 = getNextNodeLinkedList(aux2);
 
     if (carlisthead = aux)
-    {
-        carlisthead = carlisthead->next;
-        aux->next = aux2->next;
-        aux2->next = aux;
-        return carlisthead;
-    }
+        carlisthead = getNextNodeLinkedList(carlisthead); /*Removes aux from the list if it was the first element */
+    else
+        ModifyPointerNext(aux, getNextNodeLinkedList(aux)); /*Removes aux from the list if it was not the first element*/
 
-    prev->next = aux->next;
-
-
-
+    InsertNodeAfter(aux, aux2);
     return carlisthead;
 }
-*/
+

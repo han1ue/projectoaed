@@ -27,6 +27,32 @@ Item getItemLinkedList(ListNode * node)
     return node->this;
 }
 
+void ModifyPointerNext(ListNode* node, ListNode* pointer)
+{
+    /* Check if node is not empty                                   */
+    if(node == NULL || pointer == NULL)
+    {
+        printf("Error. One of the nodes you're trying to use is NULL.");
+        exit(-1);
+    }
+
+    node->next = pointer;
+}
+
+
+void InsertNodeAfter(ListNode* toinsert, ListNode* ref)
+{
+    /* Check if node is not empty                                   */
+    if(ref == NULL || toinsert == NULL)
+    {
+        printf("Error. One of the nodes you're trying to use is NULL.");
+        exit(-1);
+    }
+
+    toinsert->next = ref->next;
+    ref->next = toinsert;
+}
+
 void freeLinkedList(ListNode * head)
 {
     ListNode * next;
