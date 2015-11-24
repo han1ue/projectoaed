@@ -44,7 +44,7 @@ ParkingLot * InitParkingLot( FILE * mapconfig, int col, int row, int floors, int
     parkinglot->accesses = InitAccesses(accesses, parkinglot->graphdecoder, *vertices);
     parkinglot->ramps = InitRamps(*ramps, parkinglot->graphdecoder, *vertices);
 
-    PrintGraph(GetPLGraph(parkinglot), *vertices);  /*prints the graph in the parkinglot */
+    PrintGraph(GetGraph(parkinglot), *vertices);  /*prints the graph in the parkinglot */
     FreeMatrix(matrix, col, row, floors);
 
     return (parkinglot);
