@@ -119,9 +119,9 @@ int main( int argc, char *argv[])
     carlist = CarListInit(eventlist, decoder, vertices);
 
 
-    while(timeunit<3)// funcaoverificarseacabou
+    while(timeunit < 5)// funcaoverificarseacabou
     {
-        ExecuteEvent(eventlist, &carlist, timeunit, parkinglot);
+        eventlist = ExecuteEvent(eventlist, &carlist, timeunit, parkinglot);
 
         //mover quem tem de ser movido (cars com status = 1)
 

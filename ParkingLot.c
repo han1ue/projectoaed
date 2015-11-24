@@ -44,7 +44,7 @@ ParkingLot * InitParkingLot( FILE * mapconfig, int col, int row, int floors, int
     parkinglot->accesses = InitAccesses(accesses, parkinglot->graphdecoder, *vertices);
     parkinglot->ramps = InitRamps(*ramps, parkinglot->graphdecoder, *vertices);
 
-    PrintGraph(GetGraph(parkinglot), *vertices);  /*prints the graph in the parkinglot */
+    //PrintGraph(GetGraph(parkinglot), *vertices);  /*prints the graph in the parkinglot */
     FreeMatrix(matrix, col, row, floors);
 
     return (parkinglot);
@@ -103,7 +103,7 @@ char *** MatrixInit(int * vertices, int * ramps, FILE * mapconfig, int col, int 
             {
                 /*For each character b (0 to col) in the line a (0 to row)
                  put it in the floormatrix[b][a] meaning line b, collumn a*/
-                matrix[b][a][c] = string[b];
+                matrix[b][row-a-1][c] = string[b];  /*  */
 
                 if( string[b] != '@')   /*Counts the number of characteres that are NOT @ (# of vertices in the graph)*/
                     (*vertices)+=1;

@@ -75,7 +75,6 @@ char * GetCarID(Car* car)
 {
     return car->carid;
 }
-
 void PrintCarList(ListNode* carlisthead)
 {
     ListNode* aux;

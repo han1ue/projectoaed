@@ -279,11 +279,8 @@ ListNode* ExecuteEvent( ListNode *eventlisthead, ListNode **carlisthead, int tim
 
     auxevent = (Event*) getItemLinkedList(aux);
 
-    char* c = GetEventCar(auxevent);
-
     while( aux != NULL && (GetEventTime(auxevent) <= timeunit) )
     {
-        auxevent = (Event*) getItemLinkedList(aux);
         type = GetEventType(auxevent);
 
         if (type == 'S') /*If the vent type its an exit from the parking lot*/
@@ -300,6 +297,7 @@ ListNode* ExecuteEvent( ListNode *eventlisthead, ListNode **carlisthead, int tim
 
         prev = aux;
         aux = getNextNodeLinkedList(aux);
+        auxevent = (Event*) getItemLinkedList(aux);
         free(prev); /*Frees event from the list after it was processed */
     }
 
