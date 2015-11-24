@@ -1,4 +1,4 @@
-#include "Defs.h"
+#include "Defs.h" /*Including here as well since we need to have access to this before and it only comes after in defs.h*/
 
 struct eventstruct
 {
@@ -136,28 +136,36 @@ ListNode* EventListInit( FILE* carconfig, FILE* resconfig )
         if( varcounter == 3 )
         {
             auxevent->time = tinit;     /* auxevent  --> event that "creates" the restriction*/
-            auxevent2->time = tend;
-            auxevent->x = x;                    /*the x value (in this case) represents the floor that's gonna be restricted*/
-            auxevent2->x = x;
+            auxevent->x = -1;
             auxevent->y = -1;
-            auxevent2->y = -1;
-            auxevent->z = -1;
-            auxevent2->z = -1;
+            auxevent->z = x;				/*the x value (in this case) represents the floor that's gonna be restricted and we're saving it in the coord z so its more intuitive in the future*/
             auxevent->flag = 'f';     /* f flag means floor, for a whole floor event*/
-            auxevent2->flag = 'f';
+
+            if ( tend != 0) /*If the restriction is endless then we dont need to add the "ending event" to the list */
+            {
+                auxevent2->time = tend;
+                auxevent2->x = -1;
+                auxevent2->y = -1;
+                auxevent2->z = x;
+                auxevent2->flag = 'f';
+            }
         }
         else if( varcounter == 5 )
         {
             auxevent->time = tinit;     /* auxevent  --> event that "creates" the restriction*/
-            auxevent2->time = tend;
             auxevent->x = x;                    /*the x value (in this case) represents the floor that's gonna be restricted*/
-            auxevent2->x = x;
             auxevent->y = y;
-            auxevent2->y = y;
             auxevent->z = y;
-            auxevent2->z = y;
             auxevent->flag = 'p';      /* p flag means position for a position related event*/
-            auxevent2->flag = 'p';
+
+            if ( tend != 0) /*If the restriction is endless then we dont need to add the "ending event" to the list */
+            {
+                auxevent2->time = tend;
+                auxevent2->x = x;
+                auxevent2->y = y;
+                auxevent2->z = y;
+                auxevent2->flag = 'p';
+            }
         }
 
         else
@@ -167,8 +175,9 @@ ListNode* EventListInit( FILE* carconfig, FILE* resconfig )
         }
 
         head = insertSortedLinkedList(head, (Item) auxevent, CompareEventTime, 1);
-        head = insertSortedLinkedList(head, (Item) auxevent2, CompareEventTime, 1);
 
+        if ( tend != 0)
+            head = insertSortedLinkedList(head, (Item) auxevent2, CompareEventTime, 1);
     }
 
     return head;
@@ -249,12 +258,19 @@ void PrintEventList(ListNode* eventlisthead)
     }
 }
 
-ListNode* ExecuteEvent( ListNode *eventlisthead, ListNode **carlisthead, int timeunit, Array decoder, int vertices)
+ListNode* ExecuteEvent( ListNode *eventlisthead, ListNode **carlisthead, int timeunit, ParkingLot * parkinglot)
 {
 
     ListNode * aux, *prev;
     Event* auxevent;
     char type;
+  	Graph * graph;
+  	Array decoder;
+  	int vertices;
+
+    vertices = GetVertices(parkinglot);
+
+    decoder = GetDecoder(parkinglot);
 
     aux = eventlisthead;
 
@@ -262,17 +278,24 @@ ListNode* ExecuteEvent( ListNode *eventlisthead, ListNode **carlisthead, int tim
         return;
 
     auxevent = (Event*) getItemLinkedList(aux);
-    while( aux != NULL && (GetEventTime(auxevent) < timeunit) )
+
+    char* c = GetEventCar(auxevent);
+
+    while( aux != NULL && (GetEventTime(auxevent) <= timeunit) )
     {
         auxevent = (Event*) getItemLinkedList(aux);
         type = GetEventType(auxevent);
 
-        if (type == 'S')
-        {
-
+        if (type == 'S') /*If the vent type its an exit from the parking lot*/
             *carlisthead = RemoveCar(*carlisthead, decoder, vertices, GetEventCar(auxevent));
 
-            //mudar status, alterar pos na lista  -> precisa do decoder e da lista de carros
+        else if (type == 'r') /* If the event its a restriction */
+          HandleRestriction(auxevent, decoder, vertices);
+
+        else
+        {
+          graph = GetGraph(parkinglot);
+          *carlisthead = AddCar(*carlisthead, GetEventCar(auxevent), GetEventCoord(auxevent, 'x'), GetEventCoord(auxevent, 'y') ,GetEventCoord(auxevent, 'z'), type, decoder, vertices, graph);
         }
 
         prev = aux;

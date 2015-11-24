@@ -105,7 +105,7 @@ int main( int argc, char *argv[])
 
     /*Treat the data in the car config file and the restriction file, initializing an eventlist (queue)*/
     eventlist = EventListInit( carconfig, resconfig );
-    PrintEventList(eventlist);
+    //PrintEventList(eventlist);
 
     /* Closes the file we were reading the map from*/
     fclose(carconfig);
@@ -117,18 +117,16 @@ int main( int argc, char *argv[])
 
     /*Use the event list to make a list featuring the cars present in the park at time = 0*/
     carlist = CarListInit(eventlist, decoder, vertices);
-    PrintCarList(carlist);
 
-   /* while(funcaoverificarseacabou)
+
+    while(timeunit<3)// funcaoverificarseacabou
     {
-        ExecuteEvent(eventlist, &carlist, timeunit, decoder, vertices);
+        ExecuteEvent(eventlist, &carlist, timeunit, parkinglot);
 
-        mover quem tem de ser movido (cars com status = 1)
-
-        temos de updatar o decoder para ter os carros estacionados <----
+        //mover quem tem de ser movido (cars com status = 1)
 
         timeunit ++;
-    }*/
-
+    }
+    PrintCarList(carlist);
     return 0;
 }

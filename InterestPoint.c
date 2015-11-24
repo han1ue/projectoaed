@@ -8,6 +8,8 @@ struct interestpoint
     int z;
     /* type of vertice */
     char type;
+  	/* flag - 1 if the position is restricted, 0 if not */
+  	int flagres;
 };
 
 /******************************************************************************
@@ -49,6 +51,7 @@ Array GraphDecoderInit(char *** matrix, int col, int row, int floors, int vertic
                     IP->y = y;
                     IP->z = z;
                     IP->type = matrix[x][y][z];
+                  	IP->type = 0;
                     /*Calls function that changes the item in the position i to the InterestPoint created above */
                     ModifyArrayNodeItem(i, (Item) IP, graphdecoder);
                     i++;
@@ -110,6 +113,42 @@ char GetIP_Type(int i, Array decoder)
 }
 
 /******************************************************************************
+ * ChangeIP_Type
+ *
+ * Arguments: i - vertice from which we want to get the type
+ *						decoder - array that contains the vertices
+ *						type - type that we want to change the IP tp
+ *
+ * Returns: ---
+ *
+ *****************************************************************************/
+
+void ChangeIP_Type(int i, Array decoder, char type)
+{
+  	InterestPoint * aux;
+    aux = (InterestPoint *) GetArrayNodeItem(i, decoder);
+  	aux->type = type;
+}
+
+/******************************************************************************
+ * GetIP_FlagRes
+ *
+ * Arguments: i - vertice from which we want to get the flagres
+ *						decoder - array that contains the vertices
+ *
+ * Returns: flagrestriction we want to get
+ *
+ *****************************************************************************/
+
+int GetFlagRes(int i, Array decoder)
+{
+    InterestPoint * aux;
+    aux = (InterestPoint *) GetArrayNodeItem(i, decoder);
+
+    return aux->flagres;
+}
+
+/******************************************************************************
  * FindIP
  *
  * Arguments: x;y;z - coordinates of the vertice we want to find
@@ -142,27 +181,128 @@ int * FindIP (int vertices, int x, int y, int z, Array decoder)
     }
 }
 
-void OccupyPos(int x, int y, int z, Array decoder, int vertices)
+/******************************************************************************
+ * OccupyPos
+ *
+ * Arguments: x;y;z - coordinates of the vertice we want to find
+ *						decoder - array that contains the vertices
+ *						vertices - nuber of vertices in the array
+ *
+ * Returns: occupies position with a parked car
+ *
+ *****************************************************************************/
+
+void OccupyPos(int i, Array decoder, int vertices)
 {
-    int *index;
     InterestPoint * IP;
 
-    index = FindIP(vertices, x, y, z, decoder);
-    IP = (InterestPoint*) decoder[*index];
+    IP = (InterestPoint*) decoder[i];
     IP->type = 'x';
-
-    free(index);
 }
 
-void FreePos(int x, int y, int z, Array decoder, int vertices)
+/******************************************************************************
+ * OccupyPos
+ *
+ * Arguments: x;y;z - coordinates of the vertice we want to find
+ *						decoder - array that contains the vertices
+ *						vertices - nuber of vertices in the array
+ *
+ * Returns: frees position because car left the building
+ *
+ *****************************************************************************/
+
+void FreePos(int i, Array decoder, int vertices)
 {
-    int *index;
     InterestPoint * IP;
 
-    index = FindIP(vertices, x, y, z, decoder);
-    IP = (InterestPoint*) decoder[*index];
+    IP = (InterestPoint*) decoder[i];
     IP->type = '.';
-
-    free(index);
 }
 
+/******************************************************************************
+ * RestrictPos
+ *
+ * Arguments: x;y;z - coordinates of the vertice we want to find
+ *						decoder - array that contains the vertices
+ *						vertices - nuber of vertices in the array
+ *
+ * Returns: adds a restriction to a point in the map
+ *
+ *****************************************************************************/
+
+void RestrictPos(int i, Array decoder, int vertices)
+{
+    InterestPoint * IP;
+
+    IP = (InterestPoint*) decoder[i];
+    IP->flagres = 0;
+}
+
+/******************************************************************************
+ * ReleasePos
+ *
+ * Arguments: x;y;z - coordinates of the vertice we want to find
+ *						decoder - array that contains the vertices
+ *						vertices - nuber of vertices in the array
+ *
+ * Returns: removes the restriction from a point in the map
+ *
+ *****************************************************************************/
+
+void ReleasePos(int i, Array decoder, int vertices)
+{
+    InterestPoint * IP;
+
+    IP = (InterestPoint*) decoder[i];
+    IP->flagres = 1;
+}
+
+/******************************************************************************
+ * HandleRestriction
+ *
+ * Arguments: auxevent - restriction event that we want to handle
+ *						decoder - array that contains the vertices
+ *						vertices - nuber of vertices in the array
+ *
+ * Returns: decides how to handle a restriction event
+ *
+ *****************************************************************************/
+
+void HandleRestriction(Event * auxevent, Array decoder, int vertices)
+{
+  int x, y, z, flagres;
+  int * i;
+  int counter = 0, floor;
+
+  x = GetEventCoord(auxevent, 'x');
+  y = GetEventCoord(auxevent, 'y');
+  z = GetEventCoord(auxevent, 'z');
+
+  if(y == -1) /*If its a floor restriction */
+  {
+    floor = GetIP_Coord(counter, 'z', decoder);
+    while(floor <= z && counter < vertices) /*Stops once we finish restricting the floor or its the last vertice*/
+    {
+      floor = GetIP_Coord(counter, 'z', decoder);
+      if(floor == z && GetIP_Type(counter, decoder) == '.') /*We only change the type of the parking spots becaus eits still possible to go by foot*/
+      {
+        ChangeIP_Type(counter, decoder, 'f'); /*Changes the type of this point on the map to f to show that is floor restricted*/
+      }
+      else if(floor == z && GetIP_Type(counter, decoder) == 'f') /*We want to "kill" the restriction and go back to regular parking*/
+      {
+        ChangeIP_Type(counter, decoder, '.'); /*Changes the type of this point on the map back to parking spot free from restrictions*/
+      }
+      counter++;
+    }
+  }
+  else
+  {
+    i = FindIP (vertices, x, y, z, decoder);
+    flagres = GetFlagRes(*i, decoder);
+  	if(flagres == 0) /*if its not already restricted then we have to restrict this pos*/
+      RestrictPos(*i, decoder, vertices);
+    else
+      ReleasePos(*i, decoder, vertices); /*if it was restricted then we have to remove the restriction since its the second time it shows on the event list meaning its over*/
+  }
+
+}

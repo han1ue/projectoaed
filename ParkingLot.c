@@ -10,7 +10,7 @@ struct parkinglot
 };
 
 
-Graph* GetPLGraph(ParkingLot* parkinglot)
+Graph* GetGraph(ParkingLot* parkinglot)
 {
     return (parkinglot->g);
 }

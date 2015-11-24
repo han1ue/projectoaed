@@ -1,3 +1,5 @@
+#include "LinkedList.h"
+#include "ParkingLot.h"
 #include "Defs.h"
 
 
@@ -10,4 +12,4 @@ char GetEventFlag(Event* event);
 char* GetEventCar(Event* event);
 int GetEventCoord(Event* event, char coord);
 void PrintEventList(ListNode*);
-ListNode* ExecuteEvent( ListNode *, ListNode **, int,  Array, int);
+ListNode* ExecuteEvent( ListNode *, ListNode **, int, ParkingLot *);

@@ -13,6 +13,7 @@ Car* CarListInit(Event * eventlisthead, Array decoder, int vertices)
     Car * head, * new_car;
     ListNode* aux;
     Event* auxevent;
+    int * i;
 
     if(eventlisthead == NULL)
     {
@@ -34,7 +35,8 @@ Car* CarListInit(Event * eventlisthead, Array decoder, int vertices)
             new_car->path = NULL;
             new_car->position = 0;
             head = AddNodeToListHead(head, (Item) new_car);
-            //OccupyPos(GetEventCoord(auxevent, 'x'), GetEventCoord(auxevent, 'y'), GetEventCoord(auxevent, 'z'), decoder, vertices); /*This funcion will mark the spot (x,y,z) as occupied in the parking lot */
+          	i = FindIP(vertices, GetEventCoord(auxevent, 'x'), GetEventCoord(auxevent, 'y'), GetEventCoord(auxevent, 'z'), decoder);
+            OccupyPos(*i, decoder, vertices); /*This funcion will mark the spot (x,y,z) as occupied in the parking lot */
         }
         aux = getNextNodeLinkedList(aux);
     }
@@ -86,7 +88,9 @@ void PrintCarList(ListNode* carlisthead)
     {
         count++;
         auxcar = (Car*) getItemLinkedList(aux);
-        printf("Car %d: %s %d %d\n", count, auxcar->carid, auxcar->status, auxcar->position);
+        printf("Car %d: %s %d %d ", count, auxcar->carid, auxcar->status, auxcar->position);
+        if(auxcar->path != NULL)
+          printf("%d\n", *((int*) GetArrayNodeItem(0, auxcar->path)));
         aux = getNextNodeLinkedList(aux);
     }
 }
@@ -96,6 +100,7 @@ ListNode * RemoveCar(ListNode * carlisthead, Array decoder, int vertices, char *
 {
     ListNode * aux, * aux2, *prev;
     Event* auxevent;
+		int * i;
 
     aux = carlisthead;
 
@@ -108,7 +113,9 @@ ListNode * RemoveCar(ListNode * carlisthead, Array decoder, int vertices, char *
 
    auxevent = (Event*)getItemLinkedList(aux);
 
-   FreePos(GetEventCoord(auxevent, 'x'), GetEventCoord(auxevent, 'y'), GetEventCoord(auxevent, 'z'), decoder, vertices); /*Removes the car from this parking slot with coords x,y,z */
+   i = FindIP(vertices, GetEventCoord(auxevent, 'x'), GetEventCoord(auxevent, 'y'), GetEventCoord(auxevent, 'z'), decoder);
+
+   FreePos(*i, decoder, vertices); /*Removes the car from this parking slot with coords x,y,z */
 
    ( (Car *) getItemLinkedList(aux) )->status = 3; /* Marks the car as "left the parking lot"*/
 
@@ -125,3 +132,25 @@ ListNode * RemoveCar(ListNode * carlisthead, Array decoder, int vertices, char *
     return carlisthead;
 }
 
+ListNode* AddCar(ListNode * carlisthead, char * carname, int x, int y, int z, char type, Array decoder, int vertices, Graph * graph)
+{
+  Car * newcar;
+  ListNode * aux;
+
+  newcar = (Car *) malloc( sizeof(Car) );
+  VerifyMalloc((Item) newcar);
+
+  // DIJSKTRA( /** >>> INSERT DIJKSTRA HERE <<< */
+
+  /*Fill the car info*/
+  newcar->carid = carname;
+  newcar->status = 1;  /*means its an active car ~ not parked */
+  newcar->position = 0;  /*its in the firs position of its path */
+  newcar->path = InitArray(3); /*este tamanho depois virá do dijkstra */
+
+  ModifyArrayNodeItem(0, (Item) FindIP(vertices, x, y, z, decoder), newcar->path);  /*Inicializamos o path com a casa em que o carro entrou só para testar */
+
+  carlisthead = AddNodeToListHead(carlisthead, (Item) newcar);
+
+  return carlisthead;
+}
