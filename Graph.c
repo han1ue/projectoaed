@@ -63,3 +63,8 @@ int GetGraphVertices(Graph *g)
 {
     return g->v;
 }
+
+LinkedList* GetGraphAdjHead(Graph *g, int index)
+{
+    return (LinkedList*)g->Adj[i];
+}
