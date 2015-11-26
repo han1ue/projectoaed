@@ -1,6 +1,6 @@
 #include "Defs.h"
 
-typedef adjacency Adjacency;
+typedef struct adjacency Adjacency;
 
 Array InitAdj(int, char ***, Array, int, int, int);
 int GetAdjacencyWeight(Adjacency *);
