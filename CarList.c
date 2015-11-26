@@ -13,7 +13,7 @@ Car* CarListInit(Event * eventlisthead, Array decoder, int vertices)
     Car * head, * new_car;
     ListNode* aux;
     Event* auxevent;
-    int * i;
+    int i;
 
     if(eventlisthead == NULL)
     {
@@ -36,7 +36,7 @@ Car* CarListInit(Event * eventlisthead, Array decoder, int vertices)
             new_car->position = 0;
             head = AddNodeToListHead(head, (Item) new_car);
           	i = FindIP(vertices, GetEventCoord(auxevent, 'x'), GetEventCoord(auxevent, 'y'), GetEventCoord(auxevent, 'z'), decoder);
-            OccupyPos(*i, decoder, vertices); /*This funcion will mark the spot (x,y,z) as occupied in the parking lot */
+            OccupyPos(i, decoder, vertices); /*This funcion will mark the spot (x,y,z) as occupied in the parking lot */
         }
         aux = getNextNodeLinkedList(aux);
     }
@@ -99,7 +99,7 @@ ListNode * RemoveCar(ListNode * carlisthead, Array decoder, int vertices, char *
 {
     ListNode * aux, * aux2, *prev;
     Event* auxevent;
-		int * i;
+    int i;
 
     aux = carlisthead;
 
@@ -114,7 +114,7 @@ ListNode * RemoveCar(ListNode * carlisthead, Array decoder, int vertices, char *
 
    i = FindIP(vertices, GetEventCoord(auxevent, 'x'), GetEventCoord(auxevent, 'y'), GetEventCoord(auxevent, 'z'), decoder);
 
-   FreePos(*i, decoder, vertices); /*Removes the car from this parking slot with coords x,y,z */
+   FreePos(i, decoder, vertices); /*Removes the car from this parking slot with coords x,y,z */
 
    ( (Car *) getItemLinkedList(aux) )->status = 3; /* Marks the car as "left the parking lot"*/
 
@@ -135,6 +135,7 @@ ListNode* AddCar(ListNode * carlisthead, char * carname, int x, int y, int z, ch
 {
   Car * newcar;
   ListNode * aux;
+  int * i;
 
   newcar = (Car *) malloc( sizeof(Car) );
   VerifyMalloc((Item) newcar);
@@ -146,8 +147,11 @@ ListNode* AddCar(ListNode * carlisthead, char * carname, int x, int y, int z, ch
   newcar->status = 1;  /*means its an active car ~ not parked */
   newcar->position = 0;  /*its in the firs position of its path */
   newcar->path = InitArray(3); /*este tamanho depois virá do dijkstra */
+  
+  i = (int*) malloc( sizeof(int) );
+  *i = FindIP(vertices, x, y, z, decoder);
 
-  ModifyArrayNodeItem(0, (Item) FindIP(vertices, x, y, z, decoder), newcar->path);  /*Inicializamos o path com a casa em que o carro entrou só para testar */
+  ModifyArrayNodeItem(0, (Item) i, newcar->path);  /*Inicializamos o path com a casa em que o carro entrou só para testar */
 
   carlisthead = AddNodeToListHead(carlisthead, (Item) newcar);
 
