@@ -55,7 +55,7 @@ void Dijsktra(Graph *G, int s, int* st, int* wt, int weight_mult_factor)
                 w = GetAdjacencyVertice (adjacency);
                 weight = GetAdjacencyWeight(adjacency);
                 
-                if( wt[w] > wt[v] + ( weight * weight_mult_factor)  /*If he's walking weight_mult_factor = 3; if he's on the car weight_mult_factor = 1;*/
+                if( wt[w] > wt[v] + ( weight * weight_mult_factor) )  /*If he's walking weight_mult_factor = 3; if he's on the car weight_mult_factor = 1;*/
                    {
                        wt[w] = wt[v] + ( weight * weight_mult_factor);
                        FixUp(heap, w, wt);
