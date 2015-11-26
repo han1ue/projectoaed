@@ -12,6 +12,7 @@
 #include "ParkingLot.h"
 #include "EventList.h"
 #include "CarList.h"
+#include "Heap.h"
 
 #define MAX_STRING 200
 #define MAX_CAR_NAME 5

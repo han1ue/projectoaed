@@ -28,7 +28,7 @@
 
 /* A heap is represented by a structure: */
 struct _heap {
-  int (*comparation) (Item, Item);     /* Surprise! this field is a function pointer* to elements in the heap. */
+  int (*comparison) (Item, Item);     /* Surprise! this field is a function pointer* to elements in the heap. */
   int n_elements; 	            /* # elements in heap */
   int size;                     /* max size of the heap. */
   Item *heapdata;               /* An array of Items. */
@@ -69,7 +69,7 @@ Heap *NewHeap(int size, int (*comparison) (Item, Item))
 }
 
 /******************************************************************************
- * HeapInsert()
+ * HeapInit()
  *
  * Arguments: h - pointer to heap
  *            element - pointer to new element
@@ -141,11 +141,11 @@ void FixDown(Heap * h, int k, int* wt)
   {
     j = 2 * k + 1;
     if (((j + 1) < h->n_elements) &&
-        (h->less) ((Item) wt[j], (Item) wt[j])) {
+        (h->comparison) ((Item) wt[j], (Item) wt[j])) {
       /* second offspring is greater */
       j++;
     }
-    if (!(h->less) ((Item) wt[k], (Item) wt[j])) {
+    if (!(h->comparison) ((Item) wt[k], (Item) wt[j])) {
       /* Elements are in correct order. */
       break;
     }
@@ -182,7 +182,7 @@ Item RemoveMin(Heap * h, int * wt)
     (h->heapdata)[h->n_elements - 1] = t;
     free(h->heapdata[h->n_elements - 1]);
     h->n_elements--;
-    FixDown(h, 0);
+    FixDown(h, 0, wt);
     return t;
   }
 
@@ -203,7 +203,7 @@ int HeapEmpty(Heap* h)
 
 
 /******************************************************************************
- * NewHeap()
+ * FreeHeap()
  *
  * Arguments: size - heap size
  *            less - item comparison function

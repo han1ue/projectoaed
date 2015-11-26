@@ -7,40 +7,13 @@ Heap *NewHeap(int size, int (*comparison) (Item, Item));
 
 void FreeHeap(Heap * h);
 
-void FixUp(Heap * h, int k, int* wt);
+void FixUp(Heap *, int, int*);
 
-int Insert(Heap * h, Item element);
+void FixDown(Heap *, int, int*);
 
-int Direct_Insert(Heap * h, Item element);
+int HeapInit(Heap *, Item);
 
-void Modify(Heap * h, int indice, Item newvalue);
+int HeapEmpty(Heap*);
 
-Item RemoveMax(Heap * h);
-
-void CleanHeap(Heap * h);
-
-int VerifyHeap(Heap * h);
-
-void HeapSort(Heap * h);
-
-void Heapify(Heap * h);
-
-
-Funções a por no main/client 
-================================================================
-================================================================
-void ModifyNum(Heap * h)
-{
-  int indice;
-  int *novovalor = (int *) malloc(sizeof(int));
-
-  printf("Index of the element to change: ");
-  scanf("%d", &indice);
-  printf("New value: ");
-  scanf("%d", novovalor);
-  Modify(h, indice, (Item) novovalor);
-
-  return;
-}
-================================================================
+Item RemoveMin(Heap * h, int *);
 

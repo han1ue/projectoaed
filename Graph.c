@@ -33,10 +33,10 @@ void PrintGraph(Graph* g, int vertices)
     int i;
     ListNode* head;
     char test;
-    
+
     printf("Do you want to print all the vertices? [y/n]");
     scanf("%c", &test);
-    
+
     if (test == 'y'){
         for (i=0; i<vertices; i++)
         {
@@ -44,7 +44,7 @@ void PrintGraph(Graph* g, int vertices)
             head = (ListNode*) GetArrayNodeItem(i, g->adj);
             PrintIntList(head);
             printf("\n");
-            
+
         }
     }
     else if (test == 'n')
@@ -64,7 +64,7 @@ int GetGraphVertices(Graph *g)
     return g->v;
 }
 
-LinkedList* GetGraphAdjHead(Graph *g, int index)
+ListNode* GetGraphAdjHead(Graph *g, int i)
 {
-    return (LinkedList*)g->Adj[i];
+    return (ListNode*)g->adj[i];
 }
