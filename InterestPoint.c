@@ -164,7 +164,7 @@ int FindIP (int vertices, int x, int y, int z, Array decoder)
 
     for(IP = 0; IP < vertices; IP++)
     {
-        if( GetIP_Coord(i, 'x', decoder) == x && GetIP_Coord(i, 'y', decoder) == y && GetIP_Coord(i, 'z', decoder) == z )
+        if( GetIP_Coord(IP, 'x', decoder) == x && GetIP_Coord(IP, 'y', decoder) == y && GetIP_Coord(IP, 'z', decoder) == z )
         {
             return IP;
         }
