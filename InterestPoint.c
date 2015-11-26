@@ -158,23 +158,19 @@ int GetFlagRes(int i, Array decoder)
  *
  *****************************************************************************/
 
-int * FindIP (int vertices, int x, int y, int z, Array decoder)
+int FindIP (int vertices, int x, int y, int z, Array decoder)
 {
-    int * IP, i;
-    IP = NULL;
+    int IP;
 
-    for(i = 0; i < vertices; i++)
+    for(IP = 0; IP < vertices; IP++)
     {
         if( GetIP_Coord(i, 'x', decoder) == x && GetIP_Coord(i, 'y', decoder) == y && GetIP_Coord(i, 'z', decoder) == z )
         {
-            IP = (int *) malloc( sizeof(int) );
-            VerifyMalloc(IP);
-            *IP = i;
             return IP;
         }
     }
 
-    if(IP == NULL)
+    if(IP == vertices)
     {
         printf("Error finding vertice with coordenates (x,y,z).");
         exit(-1);
@@ -271,7 +267,7 @@ void ReleasePos(int i, Array decoder, int vertices)
 void HandleRestriction(Event * auxevent, Array decoder, int vertices)
 {
   int x, y, z, flagres;
-  int * i;
+  int i;
   int counter = 0, floor;
 
   x = GetEventCoord(auxevent, 'x');
@@ -297,12 +293,12 @@ void HandleRestriction(Event * auxevent, Array decoder, int vertices)
   }
   else
   {
-    i = FindIP (vertices, x, y, z, decoder);
-    flagres = GetFlagRes(*i, decoder);
+    i = FindIP(vertices, x, y, z, decoder);
+    flagres = GetFlagRes(i, decoder);
   	if(flagres == 0) /*if its not already restricted then we have to restrict this pos*/
-      RestrictPos(*i, decoder, vertices);
+      RestrictPos(i, decoder, vertices);
     else
-      ReleasePos(*i, decoder, vertices); /*if it was restricted then we have to remove the restriction since its the second time it shows on the event list meaning its over*/
+      ReleasePos(i, decoder, vertices); /*if it was restricted then we have to remove the restriction since its the second time it shows on the event list meaning its over*/
   }
 
 }
