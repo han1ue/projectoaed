@@ -37,6 +37,17 @@ struct _heap {
 void (*PrintItem) (Item);
 
 
+void PrintMe(Heap* h)
+{
+    int v = h->n_elements;
+    int c;
+    for (c=0; c<v; c++ )
+    {
+        printf("%d ", *((int*)(h->heapdata[c])) );
+    }
+    printf("\n");
+}
+
 /******************************************************************************
  * NewHeap()
  *
@@ -105,14 +116,21 @@ int HeapInit(Heap * h, Item element)
  *
  *****************************************************************************/
 
-void FixUp(Heap * h, int k, int* wt)
+void FixUp(Heap * h, int a, int* wt)
 {
   Item t;
-  while ((k > 0) && (h->comparison) ((Item) &wt[(k - 1) / 2], (Item) &wt[k])) //Se der bug pode ser dos pointers a entrar aqui
+  int k;
+
+  for(k=0; a != *((int*)h->heapdata[k]); k++);
+
+  while ((k > 0) && (h->comparison) ((Item) &wt[*((int*)h->heapdata[(k - 1) / 2])], (Item) &wt[*((int*)h->heapdata[k])])) //Se der bug pode ser dos pointers a entrar aqui
   {
+
+
     t = (h->heapdata)[k];
     (h->heapdata)[k] = (h->heapdata)[(k - 1) / 2];
     (h->heapdata)[(k - 1) / 2] = t;
+
 
     k = (k - 1) / 2;
   }
@@ -140,13 +158,13 @@ void FixDown(Heap * h, int k, int* wt)
   while ((2 * k + 1) < h->n_elements)
   {
     j = 2 * k + 1;
-    if (((j + 1) < h->n_elements) &&
-        (h->comparison) ((Item) wt[j], (Item) wt[j])) {
-      /* second offspring is greater */
+    if (((j + 1) < h->n_elements) && (h->comparison) ((Item) &wt[*((int*)h->heapdata[j])], (Item) &wt[*((int*)h->heapdata[j+1])])) {
+      /* second offspring is smaller than its brother */
       j++;
     }
-    if (!(h->comparison) ((Item) wt[k], (Item) wt[j])) {
-      /* Elements are in correct order. */
+
+    if (!(h->comparison) ((Item) &wt[*((int*)h->heapdata[k])], (Item) &wt[*((int*)h->heapdata[j])])) {
+      /* Elements are already in correct order. */
       break;
     }
 
@@ -156,6 +174,13 @@ void FixDown(Heap * h, int k, int* wt)
     (h->heapdata)[k] = (h->heapdata)[j];
     (h->heapdata)[j] = t;
     k = j;
+  }
+
+  if ((h->comparison) ((Item) &wt[*((int*)h->heapdata[k])], (Item) &wt[*((int*)h->heapdata[k+1])]))
+  {
+    t = (h->heapdata)[k];
+    (h->heapdata)[k] = (h->heapdata)[k+1];
+    (h->heapdata)[k+1] = t;
   }
 
   return;
@@ -180,14 +205,21 @@ Item RemoveMin(Heap * h, int * wt)
     t = (h->heapdata)[0];
     (h->heapdata)[0] = (h->heapdata)[h->n_elements - 1];
     (h->heapdata)[h->n_elements - 1] = t;
-    free(h->heapdata[h->n_elements - 1]);
-    h->n_elements--;
     FixDown(h, 0, wt);
+    h->n_elements--;
     return t;
   }
 
   return NULL;
 }
+
+void FreeLastHeapPos(Heap* h)
+{
+    free(h->heapdata[h->n_elements - 1]);
+    h->n_elements--;
+    return;
+}
+
 
 int HeapEmpty(Heap* h)
 {
@@ -197,6 +229,10 @@ int HeapEmpty(Heap* h)
 }
 
 
+int GetHeapN_Elements(Heap* h)
+{
+    return (h->n_elements);
+}
 
 
 

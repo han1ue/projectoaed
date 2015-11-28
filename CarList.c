@@ -4,7 +4,7 @@ struct carstruct
 {
     char * carid;
     int status;  /*status 1 means active car; status 2 means already parked car; status 3 means car already left the park*/
-    Array path; /*Array that will contain the path from the entry to the access */
+    int* path; /*Array that will contain the path from the entry to the access */
     int position; /*Index of the path array that the car is in right now */
 };
 
@@ -13,6 +13,7 @@ Car* CarListInit(Event * eventlisthead, Array decoder, int vertices)
     Car * head, * new_car;
     ListNode* aux;
     Event* auxevent;
+    char* carname;
     int i;
 
     if(eventlisthead == NULL)
@@ -30,7 +31,10 @@ Car* CarListInit(Event * eventlisthead, Array decoder, int vertices)
         if(GetEventType(auxevent) == 'S' && GetEventFlag(auxevent) != 'g') /*Puts the cars already parked (not put in there by gestor) in the car array */
         {
             new_car = (Car*) malloc( sizeof(Car) );
-            strcpy((new_car->carid),GetEventCar(auxevent));
+            carname = (char*)malloc(sizeof(char));
+            carname = GetEventCar(auxevent);
+            //strcpy((new_car->carid),carname);
+            new_car->carid = carname;
             new_car->status = 2;
             new_car->path = NULL;
             new_car->position = 0;
@@ -80,6 +84,7 @@ void PrintCarList(ListNode* carlisthead)
     ListNode* aux;
     Car* auxcar;
     int count = 0;
+    int i = 0;
 
     aux = carlisthead;
 
@@ -88,8 +93,12 @@ void PrintCarList(ListNode* carlisthead)
         count++;
         auxcar = (Car*) getItemLinkedList(aux);
         printf("Car %d: %s %d %d ", count, auxcar->carid, auxcar->status, auxcar->position);
-        if(auxcar->path != NULL)
-          printf("%d\n", *((int*) GetArrayNodeItem(0, auxcar->path)));
+        printf("The path is: ");
+        if (auxcar->path != NULL)
+            for(i = 30; i != auxcar->path[i]; i = auxcar->path[i])
+              printf("%d ", auxcar->path[i]);
+
+        printf("\n");
         aux = getNextNodeLinkedList(aux);
     }
 }
@@ -135,23 +144,34 @@ ListNode* AddCar(ListNode * carlisthead, char * carname, int x, int y, int z, ch
 {
   Car * newcar;
   ListNode * aux;
-  int * i;
+  int i;
+  int *st, *wt;
+
+  st = (int*)malloc(sizeof(int)*vertices);
+  VerifyMalloc((Item) st);
+  wt = (int*)malloc(sizeof(int)*vertices);
+  VerifyMalloc((Item) wt);
+
+
 
   newcar = (Car *) malloc( sizeof(Car) );
   VerifyMalloc((Item) newcar);
 
-  // DIJSKTRA( /** >>> INSERT DIJKSTRA HERE <<< */
 
   /*Fill the car info*/
   newcar->carid = carname;
   newcar->status = 1;  /*means its an active car ~ not parked */
   newcar->position = 0;  /*its in the firs position of its path */
-  newcar->path = InitArray(3); /*este tamanho depois virá do dijkstra */
-  
-  i = (int*) malloc( sizeof(int) );
-  *i = FindIP(vertices, x, y, z, decoder);
 
-  ModifyArrayNodeItem(0, (Item) i, newcar->path);  /*Inicializamos o path com a casa em que o carro entrou só para testar */
+
+  i = FindIP(vertices, x, y, z, decoder);
+
+  Dijsktra(graph, i, st, wt, 1); //testar o dijkstra
+
+  newcar->path = st;
+
+
+  //ModifyArrayNodeItem(0, (Item) i, newcar->path);  /*Inicializamos o path com a casa em que o carro entrou só para testar */
 
   carlisthead = AddNodeToListHead(carlisthead, (Item) newcar);
 

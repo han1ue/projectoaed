@@ -51,7 +51,7 @@ Array GraphDecoderInit(char *** matrix, int col, int row, int floors, int vertic
                     IP->y = y;
                     IP->z = z;
                     IP->type = matrix[x][y][z];
-                  	IP->type = 0;
+                  	IP->flagres = 0;
                     /*Calls function that changes the item in the position i to the InterestPoint created above */
                     ModifyArrayNodeItem(i, (Item) IP, graphdecoder);
                     i++;

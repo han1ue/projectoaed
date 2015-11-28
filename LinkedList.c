@@ -168,7 +168,8 @@ ListNode * insertSortedLinkedList(ListNode * head, Item this, int (* CompareFunc
 void PrintIntList(ListNode* head)
 {
     ListNode* aux = head;
-    int* toprint;
+    int toprint, toprint2;
+    Adjacency* adjacencynode;
 
     if(aux == NULL)
     {
@@ -177,8 +178,10 @@ void PrintIntList(ListNode* head)
     }
     while(aux!=NULL)
     {
-        toprint = (int*) (aux->this);
-        printf("%d ", *toprint);
+        adjacencynode = (Adjacency*) (aux->this);
+        toprint = GetAdjacencyVertice(adjacencynode);
+        toprint2 = GetAdjacencyWeight(adjacencynode);
+        printf("%d;%d ", toprint, toprint2);
         aux = aux->next;
     }
 }

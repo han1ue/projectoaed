@@ -109,7 +109,8 @@ ListNode * InsertAdjacency(int vertices, int x, int y, int z, char type, ListNod
 
 int GetAdjacencyVertice(Adjacency * adjacency)
 {
-        return adjacency->vertice;
+    int a =adjacency->vertice;
+    return adjacency->vertice;
 }
 
 int GetAdjacencyWeight(Adjacency * adjacency)

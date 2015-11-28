@@ -66,5 +66,7 @@ int GetGraphVertices(Graph *g)
 
 ListNode* GetGraphAdjHead(Graph *g, int i)
 {
-    return (ListNode*)g->adj[i];
+    ListNode* AdjHeadi;
+    AdjHeadi = (ListNode*) GetArrayNodeItem(i, g->adj);
+    return AdjHeadi;
 }
