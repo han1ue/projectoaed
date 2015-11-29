@@ -264,7 +264,6 @@ ListNode* ExecuteEvent( ListNode *eventlisthead, ListNode **carlisthead, int tim
     ListNode * aux, *prev;
     Event* auxevent;
     char type;
-  	Graph * graph;
   	Array decoder;
   	int vertices;
 
@@ -291,8 +290,7 @@ ListNode* ExecuteEvent( ListNode *eventlisthead, ListNode **carlisthead, int tim
 
         else
         {
-          graph = GetGraph(parkinglot);
-          *carlisthead = AddCar(*carlisthead, GetEventCar(auxevent), GetEventCoord(auxevent, 'x'), GetEventCoord(auxevent, 'y') ,GetEventCoord(auxevent, 'z'), type, decoder, vertices, graph);
+          *carlisthead = AddCar(*carlisthead, GetEventCar(auxevent), GetEventCoord(auxevent, 'x'), GetEventCoord(auxevent, 'y') ,GetEventCoord(auxevent, 'z'), type, decoder, vertices, GetGraph(parkinglot), GetAccesses(parkinglot));
         }
 
         prev = aux;
