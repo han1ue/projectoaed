@@ -238,3 +238,8 @@ Array GetDecoder(ParkingLot* parkinglot)
 
     return graphdecoder;
 }
+
+ListNode * GetAccesses(ParkingLot* parkinglot)
+{
+    return parkinglot->accesseshead;
+}
