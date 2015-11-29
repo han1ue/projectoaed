@@ -11,3 +11,4 @@ void FreeMatrix(char ***, int, int, int);
 Graph* GetGraph(ParkingLot*);
 int GetVertices(ParkingLot*);
 Array GetDecoder(ParkingLot*);
+ListNode * GetAccesses(ParkingLot*);
