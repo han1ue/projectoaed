@@ -177,7 +177,7 @@ void CreatePathList(ListNode** carpath, int* stfoot, int bestparkingspot)
   int * i;
 
 
-   for(pos = bestparkingspot; pos != stfoot[pos]; pos = stfoot[bestparkingspot])
+   for(pos = bestparkingspot; pos != stfoot[pos]; pos = stfoot[pos])
    {
        i = (int*)malloc(sizeof(int));
       *i = pos;
