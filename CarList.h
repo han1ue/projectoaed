@@ -8,4 +8,4 @@ char GetCarStatus(Car*);
 int CompareCarStatus(Item , Item, int);
 ListNode* RemoveCar(ListNode*, Array, int, char *);
 void PrintCarList(ListNode*);
-ListNode* AddCar(ListNode*, char *, int, int, int, char, Array, int, Graph *);
+ListNode* AddCar(ListNode*, char *, int, int, int, char, Array, int, Graph *, ListNode *);
