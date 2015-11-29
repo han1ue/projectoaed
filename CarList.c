@@ -4,8 +4,8 @@ struct carstruct
 {
     char * carid;
     int status;  /*status 1 means active car; status 2 means already parked car; status 3 means car already left the park*/
-    int* path; /*Array that will contain the path from the entry to the access */
-    int position; /*Index of the path array that the car is in right now */
+    ListNode* carpath; /*List that will contain the path from the entry to the parkingspot */
+    ListNode* footpath;  /*List that will contain the path from the parkingspot to the access */
 };
 
 Car* CarListInit(Event * eventlisthead, Array decoder, int vertices)
@@ -36,8 +36,8 @@ Car* CarListInit(Event * eventlisthead, Array decoder, int vertices)
             //strcpy((new_car->carid),carname);
             new_car->carid = carname;
             new_car->status = 2;
-            new_car->path = NULL;
-            new_car->position = 0;
+            new_car->carpath = NULL;
+            new_car->footpath = NULL;
             head = AddNodeToListHead(head, (Item) new_car);
           	i = FindIP(vertices, GetEventCoord(auxevent, 'x'), GetEventCoord(auxevent, 'y'), GetEventCoord(auxevent, 'z'), decoder);
             OccupyPos(i, decoder, vertices); /*This funcion will mark the spot (x,y,z) as occupied in the parking lot */
@@ -140,7 +140,7 @@ ListNode * RemoveCar(ListNode * carlisthead, Array decoder, int vertices, char *
     return carlisthead;
 }
 
-ListNode* AddCar(ListNode * carlisthead, char * carname, int x, int y, int z, char type, Array decoder, int vertices, Graph * graph)
+ListNode* AddCar(ListNode * carlisthead, char * carname, int x, int y, int z, char objective, Array decoder, int vertices, Graph * graph, ListNode* accesseshead)
 {
   Car * newcar;
   ListNode * aux;
@@ -161,17 +161,12 @@ ListNode* AddCar(ListNode * carlisthead, char * carname, int x, int y, int z, ch
   /*Fill the car info*/
   newcar->carid = carname;
   newcar->status = 1;  /*means its an active car ~ not parked */
-  newcar->position = 0;  /*its in the firs position of its path */
 
 
   i = FindIP(vertices, x, y, z, decoder);
 
-  Dijsktra(graph, i, st, wt, 1); //testar o dijkstra
+  PathCalculator(graph, i, &(newcar->carpath), &(newcar->footpath), decoder, accesseshead, objective, vertices);
 
-  newcar->path = st;
-
-
-  //ModifyArrayNodeItem(0, (Item) i, newcar->path);  /*Inicializamos o path com a casa em que o carro entrou só para testar */
 
   carlisthead = AddNodeToListHead(carlisthead, (Item) newcar);
 
