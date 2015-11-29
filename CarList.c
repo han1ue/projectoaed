@@ -168,6 +168,9 @@ ListNode* AddCar(ListNode * carlisthead, char * carname, int x, int y, int z, ch
 
   PathCalculator(graph, i, &(newcar->carpath), &(newcar->footpath), decoder, accesseshead, objective, vertices);
 
+  PrintIntList(newcar->carpath);
+  printf("\n");
+  PrintIntList(newcar->footpath);
 
   carlisthead = AddNodeToListHead(carlisthead, (Item) newcar);
 
