@@ -5,8 +5,7 @@ struct parkinglot
 {
     Graph* g;				     	 		/*Graph that holds the info about the adj blocks*/
     Array graphdecoder; 			/* Pointer to array of pointers that contain the info about every vertice in the graph*/
-    int * accesses;    				/* Array of indexes of the graphdecoder corresponding to an access to reduce the search cost*/
-    int * ramps;                    /* Array of indexes of the graphdecoder leading to ramps - up or down - to reduce the search cost*/
+    ListNode * accesseshead;  /* List of indexes of the graphdecoder corresponding to an access to reduce the search cost*/
 };
 
 
@@ -41,7 +40,7 @@ ParkingLot * InitParkingLot( FILE * mapconfig, int col, int row, int floors, int
     matrix = MatrixInit(vertices, ramps, mapconfig, col, row, floors); /*Creates string cointaining the map - its a 3d string */
     parkinglot->graphdecoder = GraphDecoderInit(matrix, col, row, floors, *vertices); /*Creates array cointaining the Decoder for the graph positions*/
     parkinglot->g = GraphInit(*vertices, matrix, parkinglot->graphdecoder, col, row, floors);
-    parkinglot->accesses = InitAccesses(accesses, parkinglot->graphdecoder, *vertices);
+    parkinglot->accesseshead = InitAccesses(accesses, parkinglot->graphdecoder, *vertices);
     parkinglot->ramps = InitRamps(*ramps, parkinglot->graphdecoder, *vertices);
 
     PrintGraph(GetGraph(parkinglot), *vertices);  /*prints the graph in the parkinglot */
@@ -144,27 +143,24 @@ char *** MatrixInit(int * vertices, int * ramps, FILE * mapconfig, int col, int 
  *
  *****************************************************************************/
 
-int * InitAccesses(int accesses, Array decoder, int vertices)
+ListNode * InitAccesses(int accesses, Array decoder, int vertices)
 {
-    int i, count=0;
-    int * auxarray;
+    int i, *index;
     char type;
-
-
-    /*Allocates memory for the accesses array*/
-    auxarray = (int *) malloc( accesses * sizeof(int) );
-    VerifyMalloc((Item) auxarray);
+  	ListNode* accesseshead;
 
     for(i = 0; i < vertices; i++) /*Goes through every vertice in the decoder to see if it is or not an access */
     {
         type = GetIP_Type(i, decoder);
         if( type == 'R' || type == 'C' || type == 'H' || type == 'E' || type == 'L' ) /*If it is an access */
         {
-            auxarray[count] = i;
-            count++;
+          	index = (int*) malloc( sizeof(int) );
+          	VerifyMalloc((Item) index);
+          
+						accesseshead = AddNodeToListHead(accesseshead, (Item) index);
         }
     }
-    return(auxarray);
+    return accesseshead;
 }
 
 /******************************************************************************
