@@ -64,7 +64,7 @@ void Dijsktra(Graph *G, int s, int* st, int* wt, int weight_mult_factor)
                 w = GetAdjacencyVertice (adjacency);
                 weight = GetAdjacencyWeight(adjacency);
 
-                if( wt[w] > (wt[v] + ( weight * weight_mult_factor))  && w nao esta restrito)  /*If he's walking weight_mult_factor = 3; if he's on the car weight_mult_factor = 1;*/
+                if( wt[w] > (wt[v] + ( weight * weight_mult_factor))  /*&& w nao esta restrito*/)  /*If he's walking weight_mult_factor = 3; if he's on the car weight_mult_factor = 1;*/
                    {
                        wt[w] = wt[v] + ( weight * weight_mult_factor);
                        st[w] = v;
@@ -80,10 +80,11 @@ void Dijsktra(Graph *G, int s, int* st, int* wt, int weight_mult_factor)
 
 void PathCalculator(Graph *G, int entry, ListNode** carpath, ListNode** footpath, Array decoder, ListNode * accesseshead, char objective, int vertices)
 {
-  int * wtcar, * wtfoot, *staux, *wtaux;
-  int accesstype, accesspos, bestpathweight = MAX_DISTANCE, pathweight, index, bestparkingspot;
-  ListNode * freespots, *auxaccess, *auxfreespots;
-  
+  int *stcar, *wtcar, *stfoot, *wtfoot, *staux, *wtaux;
+  int accesspos, bestpathweight = MAX_DISTANCE, pathweight, index, bestparkingspot;
+  char accesstype;
+  ListNode * freespotshead, *auxaccess, *freespotsaux;
+
   /*Allocs memmory for the st/wt with the lowest path and for the st/wt we're currently analysing */
   /*Used for the part of the path made in the car */
   wtcar = (int*)malloc(sizeof(int) * vertices);
@@ -100,87 +101,87 @@ void PathCalculator(Graph *G, int entry, ListNode** carpath, ListNode** footpath
   VerifyMalloc((Item) wtaux);
   staux = (int*)malloc(sizeof(int) * vertices);
   VerifyMalloc((Item) staux);
-  
-  
-  Dijsktra(graph, i, stcar, wtcar, 1); //Dijsktra for path inside the car
-  
+
+
+  Dijsktra(G, entry, stcar, wtcar, 1); //Dijsktra for path inside the car
+
   freespotshead = FindFreeSpots(decoder, vertices);
-  
+
   auxaccess = accesseshead;
-  
+
   while(auxaccess != NULL) /*Goes through the list of accesses and calculates the path from the wanted access to every parking spot */
   {
     accesspos =  *((int *)(getItemLinkedList(auxaccess)));
-    accesstype = GetIP_Type(accesspos, decoder));
-    if(accesstype) == objective )
+    accesstype = GetIP_Type(accesspos, decoder);
+    if(accesstype == objective )
     {
-     	 Dijsktra(graph, accesspos , staux, wtaux, 3); //Dijsktra for path inside the car
-      
-      	
-        auxfreespots = freespotshead;
+     	 Dijsktra(G, accesspos , staux, wtaux, 3); //Dijsktra for path inside the car
+
+
+        freespotsaux = freespotshead;
+        //PrintIntList(freespotsaux);
       	while(freespotsaux != NULL)
         {
-          index = *((int *)(getItemLinkedList(freespotaux), decoder));
-          
+          index = *((int *)(getItemLinkedList(freespotsaux)));
+
           pathweight = wtcar[index] + wtaux[index];
-          
+
           if( pathweight < bestpathweight)
           {
            bestpathweight = pathweight;
            bestparkingspot = index;
-           wfoot = wtaux;
+           wtfoot = wtaux;
            stfoot = staux;
           }
+          freespotsaux = getNextNodeLinkedList(freespotsaux);
         }
-          
-      
-    } 
+
+
+    }
   	auxaccess = getNextNodeLinkedList(auxaccess);
   }
-  
-  
-  =====>  MUDAR DJIKSTRA PARA VER RESTRIÇOES
+
+
+  //=====>  MUDAR DJIKSTRA PARA VER RESTRIÇOES
   // NÃO ESQUECER DE FAZER FREE NOS FREESPOTS
-  
-  *footpath = CreatePathListBackwards(*footpath, stfoot, bestparkingspot);
-  *carpath = CreatePathList(*carpath, stfoot, bestparkingspot);
- 
-  
+
+  CreatePathListBackwards(footpath, stfoot, bestparkingspot);
+  CreatePathList(carpath, stfoot, bestparkingspot);
+
+
 }
 
-ListNode * CreatePathListBackwards(ListNode* footpath, int* stfoot, int bestparkingspot)
+void CreatePathListBackwards(ListNode** footpath, int* stfoot, int bestparkingspot)
 {
   int position;
   int * i;
-  
+
   position = stfoot[bestparkingspot];
-  
+
   if(position != stfoot[position])
-    footpath = CreatePathListBackwards(footpath, stfoot, position)
-  
+    CreatePathListBackwards(footpath, stfoot, position);
+
   i = (int*) malloc( sizeof(int) );
   VerifyMalloc(i);
-  
+
   *i = position;
-  
- 	footpath = AddNodeToListHead(footpath, (Item) i);
-  
-  return footpath;
+
+  *footpath = AddNodeToListHead(*footpath, (Item) i);
+
 }
 
 
-ListNode * CreatePathList(ListNode*carpath, int* stfoot, int bestparkingspot)
+void CreatePathList(ListNode** carpath, int* stfoot, int bestparkingspot)
 {
   int pos;
   int * i;
-  
-  
-   for(pos = bestparkingspot; pos != auxcar->path[pos]; pos = stfoot[bestparkingspot])
+
+
+   for(pos = bestparkingspot; pos != stfoot[pos]; pos = stfoot[bestparkingspot])
    {
-    	i = (int*)malloc(sizeof(int));
-      *i = position;
-      carpath = AddNodeToListHead(carpath, (Item) i);
+       i = (int*)malloc(sizeof(int));
+      *i = pos;
+      *carpath = AddNodeToListHead(*carpath, (Item) i);
    }
-  
-  return carpath;
+
 }

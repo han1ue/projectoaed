@@ -305,18 +305,19 @@ void HandleRestriction(Event * auxevent, Array decoder, int vertices)
 
 ListNode * FindFreeSpots(Array decoder, int vertices)
 {
-  ListNode * freespots;
+  ListNode * freespots = ListInit(freespots);
   int i;
   int * vertice;
-  
+
   for(i = 0; i < vertices; i++)
   {
     if( GetIP_Type(i, decoder) == '.' )
     {
       	vertice = (int*) malloc ( sizeof(int) );
+      	*vertice = i;
         freespots = AddNodeToListHead(freespots, (Item) vertice);
     }
   }
-  
+
   return freespots;
 }

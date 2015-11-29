@@ -2,6 +2,7 @@
 
 typedef struct listnode ListNode;
 
+ListNode* ListInit(ListNode*);
 ListNode* AddNodeToListHead(ListNode *, Item);
 void freeLinkedList(ListNode * first);
 int lengthLinkedList(ListNode * first);

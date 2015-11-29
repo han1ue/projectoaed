@@ -22,7 +22,7 @@ Car* CarListInit(Event * eventlisthead, Array decoder, int vertices)
         return NULL;
     }
 
-    head = NULL;
+    head = ListInit(head);
     aux = eventlisthead;
 
     while (aux != NULL)
@@ -36,8 +36,8 @@ Car* CarListInit(Event * eventlisthead, Array decoder, int vertices)
             //strcpy((new_car->carid),carname);
             new_car->carid = carname;
             new_car->status = 2;
-            new_car->carpath = NULL;
-            new_car->footpath = NULL;
+            new_car->carpath = ListInit(new_car->carpath);
+            new_car->footpath = ListInit(new_car->footpath);
             head = AddNodeToListHead(head, (Item) new_car);
           	i = FindIP(vertices, GetEventCoord(auxevent, 'x'), GetEventCoord(auxevent, 'y'), GetEventCoord(auxevent, 'z'), decoder);
             OccupyPos(i, decoder, vertices); /*This funcion will mark the spot (x,y,z) as occupied in the parking lot */
@@ -79,7 +79,7 @@ char * GetCarID(Car* car)
 {
     return car->carid;
 }
-void PrintCarList(ListNode* carlisthead)
+/*void PrintCarList(ListNode* carlisthead)
 {
     ListNode* aux;
     Car* auxcar;
@@ -92,7 +92,7 @@ void PrintCarList(ListNode* carlisthead)
     {
         count++;
         auxcar = (Car*) getItemLinkedList(aux);
-        printf("Car %d: %s %d %d ", count, auxcar->carid, auxcar->status, auxcar->position);
+        printf("Car %d: %s %d ", count, auxcar->carid, auxcar->status);
         printf("The path is: ");
         if (auxcar->path != NULL)
             for(i = 30; i != auxcar->path[i]; i = auxcar->path[i])
@@ -101,7 +101,7 @@ void PrintCarList(ListNode* carlisthead)
         printf("\n");
         aux = getNextNodeLinkedList(aux);
     }
-}
+}*/
 
 
 ListNode * RemoveCar(ListNode * carlisthead, Array decoder, int vertices, char * carname)
@@ -161,7 +161,8 @@ ListNode* AddCar(ListNode * carlisthead, char * carname, int x, int y, int z, ch
   /*Fill the car info*/
   newcar->carid = carname;
   newcar->status = 1;  /*means its an active car ~ not parked */
-
+  newcar->carpath = ListInit(newcar->carpath);
+  newcar->footpath = ListInit(newcar->footpath);
 
   i = FindIP(vertices, x, y, z, decoder);
 

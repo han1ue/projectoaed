@@ -127,6 +127,6 @@ int main( int argc, char *argv[])
 
         timeunit ++;
     }
-    PrintCarList(carlist);
+    //PrintCarList(carlist);
     return 0;
 }

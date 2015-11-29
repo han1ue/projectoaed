@@ -41,7 +41,6 @@ ParkingLot * InitParkingLot( FILE * mapconfig, int col, int row, int floors, int
     parkinglot->graphdecoder = GraphDecoderInit(matrix, col, row, floors, *vertices); /*Creates array cointaining the Decoder for the graph positions*/
     parkinglot->g = GraphInit(*vertices, matrix, parkinglot->graphdecoder, col, row, floors);
     parkinglot->accesseshead = InitAccesses(accesses, parkinglot->graphdecoder, *vertices);
-    parkinglot->ramps = InitRamps(*ramps, parkinglot->graphdecoder, *vertices);
 
     PrintGraph(GetGraph(parkinglot), *vertices);  /*prints the graph in the parkinglot */
     FreeMatrix(matrix, col, row, floors);
@@ -147,7 +146,7 @@ ListNode * InitAccesses(int accesses, Array decoder, int vertices)
 {
     int i, *index;
     char type;
-  	ListNode* accesseshead;
+  	ListNode* accesseshead = ListInit(accesseshead);
 
     for(i = 0; i < vertices; i++) /*Goes through every vertice in the decoder to see if it is or not an access */
     {
@@ -156,7 +155,7 @@ ListNode * InitAccesses(int accesses, Array decoder, int vertices)
         {
           	index = (int*) malloc( sizeof(int) );
           	VerifyMalloc((Item) index);
-          
+
 						accesseshead = AddNodeToListHead(accesseshead, (Item) index);
         }
     }

@@ -6,6 +6,12 @@ struct listnode
     struct listnode * next;
 };
 
+ListNode * ListInit(ListNode* head)
+{
+    head = NULL;
+    return head;
+}
+
 ListNode* AddNodeToListHead(ListNode *head, Item this)
 {
     ListNode * new = (ListNode *)malloc(sizeof(ListNode));
