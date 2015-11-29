@@ -146,7 +146,7 @@ void PathCalculator(Graph *G, int entry, ListNode** carpath, ListNode** footpath
   // NÃO ESQUECER DE FAZER FREE NOS FREESPOTS
 
   CreatePathListBackwards(footpath, stfoot, bestparkingspot);
-  CreatePathList(carpath, stfoot, bestparkingspot);
+  CreatePathList(carpath, stcar, bestparkingspot);
 
 
 }
@@ -171,17 +171,23 @@ void CreatePathListBackwards(ListNode** footpath, int* stfoot, int bestparkingsp
 }
 
 
-void CreatePathList(ListNode** carpath, int* stfoot, int bestparkingspot)
+void CreatePathList(ListNode** carpath, int* stcar, int bestparkingspot)
 {
   int pos;
   int * i;
 
 
-   for(pos = bestparkingspot; pos != stfoot[pos]; pos = stfoot[pos])
+   for(pos = bestparkingspot; pos != stcar[pos]; pos = stcar[pos])
    {
        i = (int*)malloc(sizeof(int));
       *i = pos;
       *carpath = AddNodeToListHead(*carpath, (Item) i);
    }
+
+   //Last case
+    i = (int*)malloc(sizeof(int));
+    *i = pos;
+    *carpath = AddNodeToListHead(*carpath, (Item) i);
+
 
 }
