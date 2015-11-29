@@ -13,3 +13,4 @@ void HandleRestriction(Event *, Array, int);
 void ReleasePos(int, Array decoder, int vertices);
 void RestrictPos(int, Array decoder, int vertices);
 void ChangeIP_Type(int i, Array decoder, char type);
+ListNode * FindFreeSpots(Array, int);
