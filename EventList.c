@@ -155,7 +155,7 @@ ListNode* EventListInit( FILE* carconfig, FILE* resconfig )
             auxevent->time = tinit;     /* auxevent  --> event that "creates" the restriction*/
             auxevent->x = x;                    /*the x value (in this case) represents the floor that's gonna be restricted*/
             auxevent->y = y;
-            auxevent->z = y;
+            auxevent->z = z;
             auxevent->flag = 'p';      /* p flag means position for a position related event*/
 
             if ( tend != 0) /*If the restriction is endless then we dont need to add the "ending event" to the list */
@@ -163,7 +163,7 @@ ListNode* EventListInit( FILE* carconfig, FILE* resconfig )
                 auxevent2->time = tend;
                 auxevent2->x = x;
                 auxevent2->y = y;
-                auxevent2->z = y;
+                auxevent2->z = z;
                 auxevent2->flag = 'p';
             }
         }
@@ -264,12 +264,8 @@ ListNode* ExecuteEvent( ListNode *eventlisthead, ListNode **carlisthead, int tim
     ListNode * aux, *prev;
     Event* auxevent;
     char type;
-  	Array decoder;
-  	int vertices;
-
-    vertices = GetVertices(parkinglot);
-
-    decoder = GetDecoder(parkinglot);
+    Array decoder = GetDecoder(parkinglot);
+    int vertices = GetVertices(parkinglot);
 
     aux = eventlisthead;
 

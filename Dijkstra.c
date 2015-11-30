@@ -23,7 +23,7 @@ int Comparison(Item a, Item b)
 
 
 
-void Dijsktra(Graph *G, int s, int* st, int* wt, int weight_mult_factor)
+void Dijsktra(Graph *G, int s, int* st, int* wt, int weight_mult_factor, Array decoder)
 {
     int v, w, vertices, *newint, weight, n_elements, aux;
     ListNode * t;
@@ -49,12 +49,8 @@ void Dijsktra(Graph *G, int s, int* st, int* wt, int weight_mult_factor)
     while (HeapEmpty(heap))
     {
         v = *((int *)RemoveMin(heap, wt)); /*Removes the min value form the heap, returns it, and makes the array an heap again*/
-        printf("Remove min \n");
-        PrintMe(heap);
-        //FreeLastHeapPos(heap);
-        if (v == 32) {
-            printf("ola");
-        }
+        //printf("Remove min \n");
+        //PrintMe(heap);
         aux = v;
         if (wt[v] != MAX_DISTANCE)
         {
@@ -64,13 +60,13 @@ void Dijsktra(Graph *G, int s, int* st, int* wt, int weight_mult_factor)
                 w = GetAdjacencyVertice (adjacency);
                 weight = GetAdjacencyWeight(adjacency);
 
-                if( wt[w] > (wt[v] + ( weight * weight_mult_factor))  /*&& w nao esta restrito*/)  /*If he's walking weight_mult_factor = 3; if he's on the car weight_mult_factor = 1;*/
+                if( wt[w] > (wt[v] + ( weight * weight_mult_factor))  && GetFlagRes(w, decoder) != 1)  /*If he's walking weight_mult_factor = 3; if he's on the car weight_mult_factor = 1;*/
                    {
                        wt[w] = wt[v] + ( weight * weight_mult_factor);
                        st[w] = v;
                        FixUp(heap, w, wt);
-                       printf("Fix up \n");
-                       PrintMe(heap);
+                       //printf("Fix up \n");
+                       //PrintMe(heap);
                    }
             }
         }
@@ -103,7 +99,7 @@ void PathCalculator(Graph *G, int entry, ListNode** carpath, ListNode** footpath
   VerifyMalloc((Item) staux);
 
 
-  Dijsktra(G, entry, stcar, wtcar, 1); //Dijsktra for path inside the car
+  Dijsktra(G, entry, stcar, wtcar, 1, decoder); //Dijsktra for path inside the car
 
   freespotshead = FindFreeSpots(decoder, vertices);
 
@@ -115,7 +111,7 @@ void PathCalculator(Graph *G, int entry, ListNode** carpath, ListNode** footpath
     accesstype = GetIP_Type(accesspos, decoder);
     if(accesstype == objective )
     {
-     	 Dijsktra(G, accesspos , staux, wtaux, 3); //Dijsktra for path inside the car
+     	 Dijsktra(G, accesspos , staux, wtaux, 3, decoder); //Dijsktra for path inside the car
 
 
         freespotsaux = freespotshead;

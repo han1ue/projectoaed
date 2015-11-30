@@ -8,13 +8,15 @@ struct carstruct
     ListNode* footpath;  /*List that will contain the path from the parkingspot to the access */
 };
 
-Car* CarListInit(Event * eventlisthead, Array decoder, int vertices)
+Car* CarListInit(Event * eventlisthead, ParkingLot * parkinglot)
 {
     Car * head, * new_car;
     ListNode* aux;
     Event* auxevent;
     char* carname;
     int i;
+    Array decoder = GetDecoder(parkinglot);
+    int vertices = GetVertices(parkinglot);
 
     if(eventlisthead == NULL)
     {
@@ -168,11 +170,17 @@ ListNode* AddCar(ListNode * carlisthead, char * carname, int x, int y, int z, ch
 
   PathCalculator(graph, i, &(newcar->carpath), &(newcar->footpath), decoder, accesseshead, objective, vertices);
 
-  PrintIntList(newcar->carpath);
-  printf("\n");
-  PrintIntList(newcar->footpath);
+  PrintCarPath(newcar);
 
   carlisthead = AddNodeToListHead(carlisthead, (Item) newcar);
 
   return carlisthead;
+}
+
+void PrintCarPath(Car* car)
+{
+    printf("Car path: ");
+    PrintIntList(car->carpath);
+    printf("Foot Path: ");
+    PrintIntList(car->footpath);
 }

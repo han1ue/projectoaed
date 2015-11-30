@@ -28,7 +28,8 @@ struct interestpoint
 Array GraphDecoderInit(char *** matrix, int col, int row, int floors, int vertices)
 {
     Array graphdecoder;
-    InterestPoint* IP;
+    InterestPoint* IP, *aux;
+    Item item;
 
     int x, y, z, i = 0;
 
@@ -53,13 +54,12 @@ Array GraphDecoderInit(char *** matrix, int col, int row, int floors, int vertic
                     IP->type = matrix[x][y][z];
                   	IP->flagres = 0;
                     /*Calls function that changes the item in the position i to the InterestPoint created above */
-                    ModifyArrayNodeItem(i, (Item) IP, graphdecoder);
+                    item = ModifyArrayNodeItem(i, (Item) IP, graphdecoder); //retirar ele devolver item depois
                     i++;
                 }
             }
         }
     }
-
     return graphdecoder;
 }
 
@@ -79,7 +79,7 @@ Array GraphDecoderInit(char *** matrix, int col, int row, int floors, int vertic
 int GetIP_Coord(int i, char coord, Array decoder)
 {
     InterestPoint * aux;
-    aux = (InterestPoint *) GetArrayNodeItem(i, decoder);
+    aux = ( (InterestPoint *)GetArrayNodeItem(i, decoder) );
 
     if(coord == 'x')
         return aux->x;
@@ -164,7 +164,7 @@ int FindIP (int vertices, int x, int y, int z, Array decoder)
 
     for(IP = 0; IP < vertices; IP++)
     {
-        if( GetIP_Coord(IP, 'x', decoder) == x && GetIP_Coord(IP, 'y', decoder) == y && GetIP_Coord(IP, 'z', decoder) == z )
+        if(GetIP_Coord(IP, 'x', decoder) == x && GetIP_Coord(IP, 'y', decoder) == y && GetIP_Coord(IP, 'z', decoder) == z )
         {
             return IP;
         }
@@ -173,7 +173,7 @@ int FindIP (int vertices, int x, int y, int z, Array decoder)
     if(IP == vertices)
     {
         printf("Error finding vertice with coordenates (x,y,z).");
-        exit(-1);
+        //exit(-1);
     }
 }
 
@@ -226,12 +226,12 @@ void FreePos(int i, Array decoder, int vertices)
  *
  *****************************************************************************/
 
-void RestrictPos(int i, Array decoder, int vertices)
+void RestrictPos(int i, Array decoder)
 {
     InterestPoint * IP;
 
-    IP = (InterestPoint*) decoder[i];
-    IP->flagres = 0;
+    IP = (InterestPoint*) GetArrayNodeItem(i, decoder);
+    IP->flagres = 1;
 }
 
 /******************************************************************************
@@ -245,12 +245,12 @@ void RestrictPos(int i, Array decoder, int vertices)
  *
  *****************************************************************************/
 
-void ReleasePos(int i, Array decoder, int vertices)
+void ReleasePos(int i, Array decoder)
 {
     InterestPoint * IP;
 
-    IP = (InterestPoint*) decoder[i];
-    IP->flagres = 1;
+    IP = (InterestPoint*) GetArrayNodeItem(i, decoder);
+    IP->flagres = 0;
 }
 
 /******************************************************************************
@@ -269,6 +269,7 @@ void HandleRestriction(Event * auxevent, Array decoder, int vertices)
   int x, y, z, flagres;
   int i;
   int counter = 0, floor;
+  InterestPoint * aux;
 
   x = GetEventCoord(auxevent, 'x');
   y = GetEventCoord(auxevent, 'y');
@@ -296,9 +297,11 @@ void HandleRestriction(Event * auxevent, Array decoder, int vertices)
     i = FindIP(vertices, x, y, z, decoder);
     flagres = GetFlagRes(i, decoder);
   	if(flagres == 0) /*if its not already restricted then we have to restrict this pos*/
-      RestrictPos(i, decoder, vertices);
+    {
+    RestrictPos(i, decoder);
+    }
     else
-      ReleasePos(i, decoder, vertices); /*if it was restricted then we have to remove the restriction since its the second time it shows on the event list meaning its over*/
+    ReleasePos(i, decoder); /*if it was restricted then we have to remove the restriction since its the second time it shows on the event list meaning its over*/
   }
 
 }

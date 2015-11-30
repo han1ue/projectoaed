@@ -190,4 +190,5 @@ void PrintIntList(ListNode* head)
         printf("%d;%d ", toprint, toprint2);
         aux = aux->next;
     }
+    printf("\n");
 }

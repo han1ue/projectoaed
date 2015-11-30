@@ -105,18 +105,14 @@ int main( int argc, char *argv[])
 
     /*Treat the data in the car config file and the restriction file, initializing an eventlist (queue)*/
     eventlist = EventListInit( carconfig, resconfig );
-    //PrintEventList(eventlist);
+    PrintEventList(eventlist);
 
     /* Closes the file we were reading the map from*/
     fclose(carconfig);
     fclose(resconfig);
 
-    /*Gets # of vertices and pointer to decoder for further use*/
-    vertices = GetVertices(parkinglot);
-    decoder = GetDecoder(parkinglot);
-
     /*Use the event list to make a list featuring the cars present in the park at time = 0*/
-    carlist = CarListInit(eventlist, decoder, vertices);
+    carlist = CarListInit(eventlist, parkinglot);
 
 
     while(timeunit < 5)// funcaoverificarseacabou

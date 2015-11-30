@@ -42,7 +42,7 @@ ParkingLot * InitParkingLot( FILE * mapconfig, int col, int row, int floors, int
     parkinglot->g = GraphInit(*vertices, matrix, parkinglot->graphdecoder, col, row, floors);
     parkinglot->accesseshead = InitAccesses(accesses, parkinglot->graphdecoder, *vertices);
 
-    PrintGraph(GetGraph(parkinglot), *vertices);  /*prints the graph in the parkinglot */
+    //PrintGraph(GetGraph(parkinglot), *vertices);  /*prints the graph in the parkinglot */
     FreeMatrix(matrix, col, row, floors);
 
     return (parkinglot);
@@ -156,7 +156,9 @@ ListNode * InitAccesses(int accesses, Array decoder, int vertices)
           	index = (int*) malloc( sizeof(int) );
           	VerifyMalloc((Item) index);
 
-						accesseshead = AddNodeToListHead(accesseshead, (Item) index);
+          	*index = i;
+
+            accesseshead = AddNodeToListHead(accesseshead, (Item) index);
         }
     }
     return accesseshead;

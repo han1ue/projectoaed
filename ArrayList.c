@@ -39,11 +39,16 @@ Array InitArray(int size)
  * Returns: item we wanted to get
  *
  *****************************************************************************/
-Item * GetArrayNodeItem(int position, Array array)
+Item GetArrayNodeItem(int position, Array array)
 {
   /* Check if position is not empty                                   */
   if(array[position] == NULL)
-    return NULL;
+  {
+    printf("Error: The position %d in the array is NULL", position);
+   exit(-1);
+  }
+
+  Item a = array[position]->this;
 
   return array[position]->this;
 }
@@ -58,9 +63,11 @@ Item * GetArrayNodeItem(int position, Array array)
  * Returns: -
  *
  *****************************************************************************/
-void ModifyArrayNodeItem(int position, Item pointer, Array array)
+Item ModifyArrayNodeItem(int position, Item pointer, Array array)
 {
   array[position]->this = pointer;
+
+  return (array[position]->this);
 }
 /******************************************************************************
  * DeleteNodeItem
