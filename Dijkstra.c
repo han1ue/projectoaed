@@ -60,7 +60,7 @@ void Dijsktra(Graph *G, int s, int* st, int* wt, int weight_mult_factor, Array d
                 w = GetAdjacencyVertice (adjacency);
                 weight = GetAdjacencyWeight(adjacency);
 
-                if( wt[w] > (wt[v] + ( weight * weight_mult_factor))  && GetFlagRes(w, decoder) != 1)  /*If he's walking weight_mult_factor = 3; if he's on the car weight_mult_factor = 1;*/
+                if( wt[w] > (wt[v] + ( weight * weight_mult_factor)) && GetFlagRes(w, decoder) != 1 && CheckRamp(v, w, st, decoder) )  /*If he's walking weight_mult_factor = 3; if he's on the car weight_mult_factor = 1;*/
                    {
                        wt[w] = wt[v] + ( weight * weight_mult_factor);
                        st[w] = v;
@@ -186,4 +186,34 @@ void CreatePathList(ListNode** carpath, int* stcar, int bestparkingspot)
     *carpath = AddNodeToListHead(*carpath, (Item) i);
 
 
+}
+
+int CheckRamp(int v, int w, int * st, Array decoder)
+{
+    char type_v, type_w, type_st_v;
+
+    type_v = GetIP_Type(v, decoder);
+
+    if(type_v != 'u' && type_v != 'd')
+        return 1;
+    else
+    {
+        type_st_v = GetIP_Type(st[v], decoder);
+
+        if(type_st_v == 'u'|| type_st_v == 'd')
+        {
+            if( GetIP_Coord(w, 'z', decoder) == GetIP_Coord(v, 'z', decoder) )
+                return 1;
+            else
+                return 0;
+        }
+        else
+        {
+            if( GetIP_Coord(w, 'z', decoder) == GetIP_Coord(v, 'z', decoder) )
+                return 0;
+            else
+                return 1;
+        }
+
+    }
 }

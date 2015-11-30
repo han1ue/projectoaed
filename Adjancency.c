@@ -78,12 +78,6 @@ ListNode * InsertAdjacency(int vertices, int x, int y, int z, char type, ListNod
                     listhead = InsertAdjacency(vertices, x, y-1, z, type, listhead, decoder);
 
             }
-            /*If's to find the adjacent vertices for the ramps */
-            else if( type == 'd' )
-                listhead = InsertAdjacency(vertices, x, y, z-1, type, listhead, decoder);
-
-            else if( type == 'u' )
-                listhead = InsertAdjacency(vertices, x, y, z+1, type, listhead, decoder);
 
             else
             {
@@ -100,6 +94,11 @@ ListNode * InsertAdjacency(int vertices, int x, int y, int z, char type, ListNod
                 if( (y-1 >= 0) && (matrix[x][y-1][z] != '@'))
                     listhead = InsertAdjacency(vertices, x, y-1, z, type, listhead, decoder);
 
+                if( type == 'd' )
+                    listhead = InsertAdjacency(vertices, x, y, z-1, type, listhead, decoder);
+
+                if( type == 'u' )
+                    listhead = InsertAdjacency(vertices, x, y, z+1, type, listhead, decoder);
             }
 
             ModifyArrayNodeItem(i, (Item) listhead, adj);
