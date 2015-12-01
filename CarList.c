@@ -37,12 +37,13 @@ Car* CarListInit(Event * eventlisthead, ParkingLot * parkinglot)
             carname = GetEventCar(auxevent);
             //strcpy((new_car->carid),carname);
             new_car->carid = carname;
-            new_car->status = 2;
+            new_car->status = 1;
             new_car->carpath = ListInit(new_car->carpath);
             new_car->footpath = ListInit(new_car->footpath);
             head = AddNodeToListHead(head, (Item) new_car);
           	i = FindIP(vertices, GetEventCoord(auxevent, 'x'), GetEventCoord(auxevent, 'y'), GetEventCoord(auxevent, 'z'), decoder);
             OccupyPos(i, decoder, vertices); /*This funcion will mark the spot (x,y,z) as occupied in the parking lot */
+            DecFreeSpots(parkinglot);
         }
         aux = getNextNodeLinkedList(aux);
     }
@@ -105,8 +106,51 @@ char * GetCarID(Car* car)
     }
 }*/
 
+ListNode * HandleQueue(Graph * graph, Array decoder, ListNode * accesseshead, ListNode * carlisthead, int vertices)
+{
+  ListNode *aux, *objectivenode, *aux2;
+  Car * car;
+  char * objective;
+  int * source;
 
-ListNode * RemoveCar(ListNode * carlisthead, Array decoder, int vertices, char * carname)
+  car = (Car *) getItemLinkedList(carlisthead);
+
+  source = (int *) getItemLinkedList(car->carpath);
+
+  objectivenode = getNextNodeLinkedList(car->carpath);
+
+  objective = (char *) getItemLinkedList(objectivenode);
+
+  if( car->status != 0)
+    return carlisthead;
+
+  car->status = 1;
+  PathCalculator(graph, *source, &(car->carpath), &(car->footpath), decoder, accesseshead, *objective, vertices);
+
+  /* Make the queded car leave the queue */
+
+  aux = carlisthead;
+  aux2 = carlisthead;
+
+  while( GetCarStatus( (Car *) getItemLinkedList( getNextNodeLinkedList(aux2) ) ) != 1)
+    aux2 = getNextNodeLinkedList(aux2);
+
+  carlisthead = getNextNodeLinkedList(carlisthead);
+
+  InsertNodeAfter(aux, aux2);
+
+  /* Free the memory used to bring the variables in*/
+
+  free(objectivenode);
+  free(objective);
+  free(source);
+
+  return carlisthead;
+}
+
+
+
+ListNode * RemoveCar(Graph * graph, ListNode * carlisthead, ListNode * accesseshead, Array decoder, int vertices, char * carname)
 {
     ListNode * aux, * aux2, *prev;
     Event* auxevent;
@@ -127,10 +171,10 @@ ListNode * RemoveCar(ListNode * carlisthead, Array decoder, int vertices, char *
 
    FreePos(i, decoder, vertices); /*Removes the car from this parking slot with coords x,y,z */
 
-   ( (Car *) getItemLinkedList(aux) )->status = 3; /* Marks the car as "left the parking lot"*/
+   ( (Car *) getItemLinkedList(aux) )->status = 2; /* Marks the car as "left the parking lot"*/
 
    aux2 = aux; /*Start looking in the list from when we stoped on the last loop */
-   while( GetCarStatus( getItemLinkedList(getNextNodeLinkedList(aux2)) ) != 3 )
+   while( GetCarStatus( getItemLinkedList(getNextNodeLinkedList(aux2)) ) != 2 )
         aux2 = getNextNodeLinkedList(aux2);
 
     if (carlisthead = aux)
@@ -139,13 +183,17 @@ ListNode * RemoveCar(ListNode * carlisthead, Array decoder, int vertices, char *
         ModifyPointerNext(aux, getNextNodeLinkedList(aux)); /*Removes aux from the list if it was not the first element*/
 
     InsertNodeAfter(aux, aux2);
+
+  	carlisthead = HandleQueue(graph, decoder, accesseshead, carlisthead, vertices);
+
     return carlisthead;
 }
 
-ListNode* AddCar(ListNode * carlisthead, char * carname, int x, int y, int z, char objective, Array decoder, int vertices, Graph * graph, ListNode* accesseshead)
+ListNode* AddCar(ListNode * carlisthead, char * carname, int x, int y, int z, char objective, Array decoder, int vertices, Graph * graph, ListNode* accesseshead, int freespots)
 {
   Car * newcar;
-  ListNode * aux;
+  char * queueobjective;
+  int * queuesource;
   int i;
   int *st, *wt;
 
@@ -154,28 +202,45 @@ ListNode* AddCar(ListNode * carlisthead, char * carname, int x, int y, int z, ch
   wt = (int*)malloc(sizeof(int)*vertices);
   VerifyMalloc((Item) wt);
 
-
-
   newcar = (Car *) malloc( sizeof(Car) );
   VerifyMalloc((Item) newcar);
 
 
   /*Fill the car info*/
   newcar->carid = carname;
-  newcar->status = 1;  /*means its an active car ~ not parked */
+
   newcar->carpath = ListInit(newcar->carpath);
   newcar->footpath = ListInit(newcar->footpath);
-
   i = FindIP(vertices, x, y, z, decoder);
 
-  PathCalculator(graph, i, &(newcar->carpath), &(newcar->footpath), decoder, accesseshead, objective, vertices);
+  if(freespots != 0)
+  {
+    newcar->status = 1;  /*means its an active car ~ already processed */
+    PathCalculator(graph, i, &(newcar->carpath), &(newcar->footpath), decoder, accesseshead, objective, vertices);
+    PrintCarPath(newcar);
+	}
+  else
+  {
+  	newcar->status = 0;  /*means its an queded car ~ not processed yet */
 
-  PrintCarPath(newcar);
+    /*Using the carpath LinkedList as a support list to save the source and objective of a queued car */
+    queueobjective = (char*) malloc( sizeof(char) );
+    VerifyMalloc( (Item) queueobjective);
 
-  carlisthead = AddNodeToListHead(carlisthead, (Item) newcar);
+    newcar->carpath = AddNodeToListHead(newcar->carpath, (Item) queueobjective);
+
+    queuesource = (char*) malloc( sizeof(char) );
+    VerifyMalloc( (Item) queuesource);
+
+    newcar->carpath = AddNodeToListHead(newcar->carpath, (Item) queuesource);
+  }
+
+  carlisthead = insertSortedLinkedList(carlisthead, (Item) newcar, CompareCarStatus, 1); //esta direction pode tar errada, confirmar se necessario
+  //carlisthead = AddNodeToListHead(carlisthead, (Item) newcar);
 
   return carlisthead;
 }
+
 
 void PrintCarPath(Car* car)
 {

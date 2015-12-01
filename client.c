@@ -123,6 +123,6 @@ int main( int argc, char *argv[])
 
         timeunit ++;
     }
-    //PrintCarList(carlist);
+
     return 0;
 }

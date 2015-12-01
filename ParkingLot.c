@@ -4,8 +4,9 @@
 struct parkinglot
 {
     Graph* g;				     	 		/*Graph that holds the info about the adj blocks*/
-    Array graphdecoder; 			/* Pointer to array of pointers that contain the info about every vertice in the graph*/
-    ListNode * accesseshead;  /* List of indexes of the graphdecoder corresponding to an access to reduce the search cost*/
+    Array graphdecoder; 			/*Pointer to array of pointers that contain the info about every vertice in the graph*/
+    ListNode * accesseshead;  /*List of indexes of the graphdecoder corresponding to an access to reduce the search cost*/
+  	int freespots;						/*Number of free parking spots in the park */
 };
 
 
@@ -37,8 +38,9 @@ ParkingLot * InitParkingLot( FILE * mapconfig, int col, int row, int floors, int
 
     parkinglot = (ParkingLot*) malloc( sizeof(ParkingLot) );
     VerifyMalloc((Item) parkinglot);
+    parkinglot->freespots = 0;
     matrix = MatrixInit(vertices, ramps, mapconfig, col, row, floors); /*Creates string cointaining the map - its a 3d string */
-    parkinglot->graphdecoder = GraphDecoderInit(matrix, col, row, floors, *vertices); /*Creates array cointaining the Decoder for the graph positions*/
+    parkinglot->graphdecoder = GraphDecoderInit(matrix, col, row, floors, *vertices, &(parkinglot->freespots) ); /*Creates array cointaining the Decoder for the graph positions*/
     parkinglot->g = GraphInit(*vertices, matrix, parkinglot->graphdecoder, col, row, floors);
     parkinglot->accesseshead = InitAccesses(accesses, parkinglot->graphdecoder, *vertices);
 
@@ -243,4 +245,23 @@ Array GetDecoder(ParkingLot* parkinglot)
 ListNode * GetAccesses(ParkingLot* parkinglot)
 {
     return parkinglot->accesseshead;
+}
+
+int GetFreeSpots(ParkingLot* parkinglot)
+{
+    return (parkinglot->freespots);
+}
+
+void IncFreeSpots(ParkingLot* parkinglot)
+{
+    (parkinglot->freespots)++;
+
+    return;
+}
+
+void DecFreeSpots(ParkingLot* parkinglot)
+{
+    (parkinglot->freespots)++;
+
+    return;
 }

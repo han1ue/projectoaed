@@ -12,3 +12,6 @@ Graph* GetGraph(ParkingLot*);
 int GetVertices(ParkingLot*);
 Array GetDecoder(ParkingLot*);
 ListNode * GetAccesses(ParkingLot*);
+int GetFreeSpots(ParkingLot* parkinglot);
+void IncFreeSpots(ParkingLot* parkinglot);
+void DecFreeSpots(ParkingLot* parkinglot);
