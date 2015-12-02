@@ -261,7 +261,7 @@ void IncFreeSpots(ParkingLot* parkinglot)
 
 void DecFreeSpots(ParkingLot* parkinglot)
 {
-    (parkinglot->freespots)++;
+    (parkinglot->freespots)--;
 
     return;
 }

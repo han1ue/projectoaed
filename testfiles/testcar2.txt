@@ -1,1 +1,9 @@
 Va1 2 R 3 0 0
+Va2 3 R 3 0 0
+Va3 5 R 3 0 0
+Va4 6 R 3 0 0
+Va2 15 S
+Va3 30 S
+Va5 40 R 3 0 0
+Va6 41 R 3 0 0
+Va1 45 S

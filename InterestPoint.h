@@ -9,7 +9,7 @@ int FindIP(int, int, int, int, Array);
 void OccupyPos(int, Array, int);
 void FreePos(int, Array, int);
 int GetFlagRes(int, Array);
-ListNode * HandleRestriction(Graph *, ListNode *, Event *, Array, ListNode *, int, ParkingLot *);
+ListNode * HandleRestriction(Graph *, ListNode *, Event *, Array, ListNode *, int, ParkingLot *, int *);
 void ReleasePos(int, Array decoder);
 void RestrictPos(int, Array decoder);
 void ChangeIP_Type(int i, Array decoder, char type);

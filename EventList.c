@@ -264,6 +264,7 @@ ListNode* ExecuteEvent( ListNode *eventlisthead, ListNode **carlisthead, int tim
     ListNode * aux, *prev;
     Event* auxevent;
     char type;
+    int queueflag;
     Array decoder = GetDecoder(parkinglot);
     int vertices = GetVertices(parkinglot);
     ListNode * accesseshead = GetAccesses(parkinglot);
@@ -283,18 +284,28 @@ ListNode* ExecuteEvent( ListNode *eventlisthead, ListNode **carlisthead, int tim
 
         if (type == 'S') /*If the vent type its an exit from the parking lot*/
         {
-            *carlisthead = RemoveCar(graph, *carlisthead, accesseshead, decoder, vertices, GetEventCar(auxevent));
-            IncFreeSpots(parkinglot);
+            queueflag = 0; /*Goes to 1 if a queded car was parked*/
+            *carlisthead = RemoveCar(graph, *carlisthead, accesseshead, decoder, vertices, auxevent, &queueflag);
+            if(queueflag != 0)
+            {
+                IncFreeSpots(parkinglot);
+                freespots = GetFreeSpots(parkinglot);
+            }
         }
 
-        else if (type == 'r') /* If the event its a restriction */
-          *carlisthead = HandleRestriction(graph, accesseshead, auxevent, decoder, *carlisthead, vertices, parkinglot);
+        else if (type == 'r') /* If the event is a restriction */
+        {
+            queueflag = 0; /*Goes to 1 if a queded car was parked*/
+            *carlisthead = HandleRestriction(graph, accesseshead, auxevent, decoder, *carlisthead, vertices, parkinglot, &queueflag);
+        }
 
         else
         {
           *carlisthead = AddCar(*carlisthead, GetEventCar(auxevent), GetEventCoord(auxevent, 'x'), GetEventCoord(auxevent, 'y') ,GetEventCoord(auxevent, 'z'), type, decoder, vertices, graph, accesseshead, freespots);
+          if(freespots != 0)
           DecFreeSpots(parkinglot);
         }
+
 
         prev = aux;
         aux = getNextNodeLinkedList(aux);

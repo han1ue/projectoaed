@@ -50,8 +50,6 @@ FILE * OpenFile ( char *name, char *mode )
 
 ParkingLot * MapInit( FILE* mapconfig )
 {
-
-    int i;
     int col, row, floors, entries, accesses;
     ParkingLot* parkinglot; /*Pointer to struct */
 
@@ -79,9 +77,7 @@ int main( int argc, char *argv[])
     char* restrictionsfile = argv[3];
     ParkingLot* parkinglot; /*Pointer to the parkinglot struct */
     ListNode * eventlist, * carlist;
-    int vertices, timeunit = 0;
-    Array decoder;
-
+    int timeunit = 0;
 
     /*Verify number of arguments*/
     if(argc != 4)
@@ -114,8 +110,7 @@ int main( int argc, char *argv[])
     /*Use the event list to make a list featuring the cars present in the park at time = 0*/
     carlist = CarListInit(eventlist, parkinglot);
 
-
-    while(timeunit < 5)// funcaoverificarseacabou
+    while(timeunit < 50)// funcaoverificarseacabou
     {
         eventlist = ExecuteEvent(eventlist, &carlist, timeunit, parkinglot);
 
@@ -123,6 +118,8 @@ int main( int argc, char *argv[])
 
         timeunit ++;
     }
+    printf("Final Carl List: \n");
+    PrintCarList(carlist);
 
     return 0;
 }

@@ -1,0 +1,81 @@
+# depslib dependency file v1.0
+1449073551 source:/home/joao/Desktop/projectoaed/Adjancency.c
+	"Defs.h"
+
+1449073551 /home/joao/Desktop/projectoaed/Defs.h
+	<stdlib.h>
+	<stdio.h>
+	<string.h>
+	"ArrayList.h"
+	"Adjacency.h"
+	"Graph.h"
+	"InterestPoint.h"
+	"LinkedList.h"
+	"ParkingLot.h"
+	"EventList.h"
+	"CarList.h"
+	"Heap.h"
+
+1449073551 /home/joao/Desktop/projectoaed/ArrayList.h
+	"Defs.h"
+
+1449073551 /home/joao/Desktop/projectoaed/Adjacency.h
+	"Defs.h"
+
+1449073551 /home/joao/Desktop/projectoaed/Graph.h
+	"LinkedList.h"
+	"Defs.h"
+
+1449073551 /home/joao/Desktop/projectoaed/LinkedList.h
+	"Defs.h"
+
+1449085715 /home/joao/Desktop/projectoaed/InterestPoint.h
+	"EventList.h"
+	"Defs.h"
+
+1449073551 /home/joao/Desktop/projectoaed/EventList.h
+	"LinkedList.h"
+	"ParkingLot.h"
+	"Defs.h"
+
+1449073551 /home/joao/Desktop/projectoaed/ParkingLot.h
+	"Defs.h"
+
+1449085094 /home/joao/Desktop/projectoaed/CarList.h
+	"Defs.h"
+
+1449073551 /home/joao/Desktop/projectoaed/Heap.h
+	"Defs.h"
+
+1449073551 source:/home/joao/Desktop/projectoaed/ArrayList.c
+	"Defs.h"
+
+1449081375 source:/home/joao/Desktop/projectoaed/client.c
+	"Defs.h"
+
+1449073551 source:/home/joao/Desktop/projectoaed/Dijkstra.c
+	"Defs.h"
+
+1449087488 source:/home/joao/Desktop/projectoaed/EventList.c
+	"Defs.h"
+
+1449073551 source:/home/joao/Desktop/projectoaed/Graph.c
+	"Defs.h"
+
+1449073551 source:/home/joao/Desktop/projectoaed/Heap.c
+	<stdlib.h>
+	<stdio.h>
+	"Heap.h"
+
+1449085626 source:/home/joao/Desktop/projectoaed/InterestPoint.c
+	"Defs.h"
+
+1449082479 source:/home/joao/Desktop/projectoaed/LinkedList.c
+	"Defs.h"
+
+1449074704 source:/home/joao/Desktop/projectoaed/ParkingLot.c
+	"Defs.h"
+
+1449088408 source:/home/joao/Desktop/projectoaed/CarList.c
+	"Defs.h"
+

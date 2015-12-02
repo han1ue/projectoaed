@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="aed" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/aed" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Option parameters="testfiles/testmap3.txt testfiles/testcar2.txt testfiles/testrest5.txt" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/aed" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="Adjacency.h" />
+		<Unit filename="Adjancency.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="ArrayList.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="ArrayList.h" />
+		<Unit filename="CarList.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="CarList.h" />
+		<Unit filename="Defs.h" />
+		<Unit filename="Dijkstra.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Dijkstra.h" />
+		<Unit filename="EventList.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="EventList.h" />
+		<Unit filename="Graph.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Graph.h" />
+		<Unit filename="Heap.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Heap.h" />
+		<Unit filename="InterestPoint.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="InterestPoint.h" />
+		<Unit filename="LinkedList.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="LinkedList.h" />
+		<Unit filename="ParkingLot.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="ParkingLot.h" />
+		<Unit filename="README.md" />
+		<Unit filename="client.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="testfiles/testcar.txt" />
+		<Unit filename="testfiles/testcar2.txt" />
+		<Unit filename="testfiles/testmap.txt" />
+		<Unit filename="testfiles/testmap2.txt" />
+		<Unit filename="testfiles/testmap3.txt" />
+		<Unit filename="testfiles/testmap4.txt" />
+		<Unit filename="testfiles/testmap5.txt" />
+		<Unit filename="testfiles/testrest.txt" />
+		<Unit filename="testfiles/testrest2.txt" />
+		<Unit filename="testfiles/testrest5.txt" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<lib_finder disable_auto="1" />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

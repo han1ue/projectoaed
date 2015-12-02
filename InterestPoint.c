@@ -176,7 +176,7 @@ int FindIP (int vertices, int x, int y, int z, Array decoder)
     if(IP == vertices)
     {
         printf("Error finding vertice with coordenates (x,y,z).");
-        //exit(-1);
+        exit(-1);
     }
 }
 
@@ -214,7 +214,7 @@ void FreePos(int i, Array decoder, int vertices)
 {
     InterestPoint * IP;
 
-    IP = (InterestPoint*) decoder[i];
+    IP = (InterestPoint*) GetArrayNodeItem(i, decoder);
     IP->type = '.';
 }
 
@@ -267,7 +267,7 @@ void ReleasePos(int i, Array decoder)
  *
  *****************************************************************************/
 
-ListNode * HandleRestriction(Graph * graph, ListNode * accesseshead, Event * auxevent, Array decoder, ListNode * carlisthead, int vertices, ParkingLot * parkinglot)
+ListNode * HandleRestriction(Graph * graph, ListNode * accesseshead, Event * auxevent, Array decoder, ListNode * carlisthead, int vertices, ParkingLot * parkinglot, int * queueflag)
 {
   int x, y, z, flagres;
   int i;
@@ -310,9 +310,13 @@ ListNode * HandleRestriction(Graph * graph, ListNode * accesseshead, Event * aux
     else
     {
         ReleasePos(i, decoder); /*if it was restricted then we have to remove the restriction since its the second time it shows on the event list meaning its over*/
-        carlisthead = HandleQueue(graph, decoder, accesseshead, carlisthead, vertices);
         if(type == '.')
+        {
             IncFreeSpots(parkinglot);
+            carlisthead = HandleQueue(graph, decoder, accesseshead, carlisthead, vertices, queueflag);
+                if(*queueflag == 1 )
+                    IncFreeSpots(parkinglot);
+        }
   }
 
     return carlisthead;

@@ -52,7 +52,7 @@ Car* CarListInit(Event * eventlisthead, ParkingLot * parkinglot)
 }
 
 
-char GetCarStatus(Car* car)
+int GetCarStatus(Car* car)
 {
     return car->status;
 }
@@ -80,9 +80,9 @@ int CompareCarStatus(Item car1, Item car2, int direction)
 
 char * GetCarID(Car* car)
 {
-    return car->carid;
+    return (car->carid);
 }
-/*void PrintCarList(ListNode* carlisthead)
+void PrintCarList(ListNode* carlisthead)
 {
     ListNode* aux;
     Car* auxcar;
@@ -95,18 +95,12 @@ char * GetCarID(Car* car)
     {
         count++;
         auxcar = (Car*) getItemLinkedList(aux);
-        printf("Car %d: %s %d ", count, auxcar->carid, auxcar->status);
-        printf("The path is: ");
-        if (auxcar->path != NULL)
-            for(i = 30; i != auxcar->path[i]; i = auxcar->path[i])
-              printf("%d ", auxcar->path[i]);
-
-        printf("\n");
+        printf("Car %d: %s %d \n", count, auxcar->carid, auxcar->status);
         aux = getNextNodeLinkedList(aux);
     }
-}*/
+}
 
-ListNode * HandleQueue(Graph * graph, Array decoder, ListNode * accesseshead, ListNode * carlisthead, int vertices)
+ListNode * HandleQueue(Graph * graph, Array decoder, ListNode * accesseshead, ListNode * carlisthead, int vertices, int * queueflag)
 {
   ListNode *aux, *objectivenode, *aux2;
   Car * car;
@@ -122,7 +116,10 @@ ListNode * HandleQueue(Graph * graph, Array decoder, ListNode * accesseshead, Li
   objective = (char *) getItemLinkedList(objectivenode);
 
   if( car->status != 0)
+  {
+    *queueflag = 1;
     return carlisthead;
+  }
 
   car->status = 1;
   PathCalculator(graph, *source, &(car->carpath), &(car->footpath), decoder, accesseshead, *objective, vertices);
@@ -132,12 +129,17 @@ ListNode * HandleQueue(Graph * graph, Array decoder, ListNode * accesseshead, Li
   aux = carlisthead;
   aux2 = carlisthead;
 
-  while( GetCarStatus( (Car *) getItemLinkedList( getNextNodeLinkedList(aux2) ) ) != 1)
+  while( getNextNodeLinkedList(aux2) != NULL && ( GetCarStatus( (Car *) getItemLinkedList( getNextNodeLinkedList(aux2) ) ) != 1 ))
     aux2 = getNextNodeLinkedList(aux2);
 
-  carlisthead = getNextNodeLinkedList(carlisthead);
+  if( aux2 != carlisthead)
+  {
+    carlisthead = getNextNodeLinkedList(carlisthead);
+    InsertNodeAfter(aux, aux2);
+  }
 
-  InsertNodeAfter(aux, aux2);
+    printf("Remove car from queue \n");
+    PrintCarList(carlisthead);
 
   /* Free the memory used to bring the variables in*/
 
@@ -150,22 +152,22 @@ ListNode * HandleQueue(Graph * graph, Array decoder, ListNode * accesseshead, Li
 
 
 
-ListNode * RemoveCar(Graph * graph, ListNode * carlisthead, ListNode * accesseshead, Array decoder, int vertices, char * carname)
+ListNode * RemoveCar(Graph * graph, ListNode * carlisthead, ListNode * accesseshead, Array decoder, int vertices, Event* auxevent, int * queueflag)
 {
     ListNode * aux, * aux2, *prev;
-    Event* auxevent;
     int i;
+    char * carname;
+
+    carname = GetEventCar(auxevent);
 
     aux = carlisthead;
 
-    while(strcmp( GetCarID( getItemLinkedList(aux) ), carname ) != 0 )
+    while(strcmp( GetCarID( (Car*) getItemLinkedList(aux) ), carname ) != 0 )
     {
         prev = aux;
         aux = getNextNodeLinkedList(aux);
         /*Once we're out of this cicle we found the car we want to place in "the end" of the list*/
     }
-
-   auxevent = (Event*)getItemLinkedList(aux);
 
    i = FindIP(vertices, GetEventCoord(auxevent, 'x'), GetEventCoord(auxevent, 'y'), GetEventCoord(auxevent, 'z'), decoder);
 
@@ -174,17 +176,24 @@ ListNode * RemoveCar(Graph * graph, ListNode * carlisthead, ListNode * accessesh
    ( (Car *) getItemLinkedList(aux) )->status = 2; /* Marks the car as "left the parking lot"*/
 
    aux2 = aux; /*Start looking in the list from when we stoped on the last loop */
-   while( GetCarStatus( getItemLinkedList(getNextNodeLinkedList(aux2)) ) != 2 )
-        aux2 = getNextNodeLinkedList(aux2);
 
-    if (carlisthead = aux)
-        carlisthead = getNextNodeLinkedList(carlisthead); /*Removes aux from the list if it was the first element */
-    else
-        ModifyPointerNext(aux, getNextNodeLinkedList(aux)); /*Removes aux from the list if it was not the first element*/
+    if(getNextNodeLinkedList(aux) != NULL)
+    {
+       while( getNextNodeLinkedList(aux2) != NULL && ( GetCarStatus( (Car*) getItemLinkedList(getNextNodeLinkedList(aux2)) ) != 2 ) )
+            aux2 = getNextNodeLinkedList(aux2);
 
-    InsertNodeAfter(aux, aux2);
+        if (carlisthead == aux)
+            carlisthead = getNextNodeLinkedList(carlisthead); /*Removes aux from the list if it was the first element */
+        else
+            ModifyPointerNext(prev, getNextNodeLinkedList(aux)); /*Removes aux from the list if it was not the first element*/
 
-  	carlisthead = HandleQueue(graph, decoder, accesseshead, carlisthead, vertices);
+        InsertNodeAfter(aux, aux2);
+    }
+
+    printf("Before handling queue and after removing \n");
+    PrintCarList(carlisthead);
+
+  	carlisthead = HandleQueue(graph, decoder, accesseshead, carlisthead, vertices, queueflag);
 
     return carlisthead;
 }
@@ -217,7 +226,9 @@ ListNode* AddCar(ListNode * carlisthead, char * carname, int x, int y, int z, ch
   {
     newcar->status = 1;  /*means its an active car ~ already processed */
     PathCalculator(graph, i, &(newcar->carpath), &(newcar->footpath), decoder, accesseshead, objective, vertices);
-    PrintCarPath(newcar);
+    //PrintCarPath(newcar);
+    printf("Add Normal Car \n\n");
+    printf("FreeSpots: %d\n\n", freespots);
 	}
   else
   {
@@ -227,17 +238,22 @@ ListNode* AddCar(ListNode * carlisthead, char * carname, int x, int y, int z, ch
     queueobjective = (char*) malloc( sizeof(char) );
     VerifyMalloc( (Item) queueobjective);
 
+    *queueobjective = objective;
+
     newcar->carpath = AddNodeToListHead(newcar->carpath, (Item) queueobjective);
 
-    queuesource = (char*) malloc( sizeof(char) );
+    queuesource = (int*) malloc( sizeof(int) );
     VerifyMalloc( (Item) queuesource);
 
+    *queuesource = i;
+
     newcar->carpath = AddNodeToListHead(newcar->carpath, (Item) queuesource);
+
+    printf("Add Queue Car \n");
   }
 
   carlisthead = insertSortedLinkedList(carlisthead, (Item) newcar, CompareCarStatus, 1); //esta direction pode tar errada, confirmar se necessario
-  //carlisthead = AddNodeToListHead(carlisthead, (Item) newcar);
-
+  PrintCarList(carlisthead);
   return carlisthead;
 }
 
