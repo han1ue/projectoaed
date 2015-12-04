@@ -101,6 +101,7 @@ void PathCalculator(Graph *G, int entry, ListNode** carpath, ListNode** footpath
 
   Dijsktra(G, entry, stcar, wtcar, 1, decoder); //Dijsktra for path inside the car
 
+
   freespotshead = FindFreeSpots(decoder, vertices);
 
   auxaccess = accesseshead;
@@ -112,7 +113,6 @@ void PathCalculator(Graph *G, int entry, ListNode** carpath, ListNode** footpath
     if(accesstype == objective )
     {
      	 Dijsktra(G, accesspos , staux, wtaux, 3, decoder); //Dijsktra for path inside the car
-
 
         freespotsaux = freespotshead;
         //PrintIntList(freespotsaux);
@@ -137,11 +137,10 @@ void PathCalculator(Graph *G, int entry, ListNode** carpath, ListNode** footpath
   	auxaccess = getNextNodeLinkedList(auxaccess);
   }
 
-
-  //=====>  MUDAR DJIKSTRA PARA VER RESTRIÇOES
   // NÃO ESQUECER DE FAZER FREE NOS FREESPOTS
 
   CreatePathListBackwards(footpath, stfoot, bestparkingspot);
+  PrintIntList(*footpath);
   CreatePathList(carpath, stcar, bestparkingspot);
 
 

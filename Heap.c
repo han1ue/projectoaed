@@ -205,8 +205,8 @@ Item RemoveMin(Heap * h, int * wt)
     t = (h->heapdata)[0];
     (h->heapdata)[0] = (h->heapdata)[h->n_elements - 1];
     (h->heapdata)[h->n_elements - 1] = t;
-    FixDown(h, 0, wt);
     h->n_elements--;
+    FixDown(h, 0, wt);
     return t;
   }
 

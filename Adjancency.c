@@ -63,18 +63,18 @@ ListNode * InsertAdjacency(int vertices, int x, int y, int z, char type, ListNod
 
 
             /*Special case for inserting adj vertices for parking spots because we dont want them to be adjacent with other parking spots*/
-            if ( type == '.')
+            if ( type == '.' || type == 'x')
             {
-                if( (x+1 < col) && (matrix[x+1][y][z] != '@') && (matrix[x+1][y][z] != '.'))
+                if( (x+1 < col) && (matrix[x+1][y][z] != '@') && (matrix[x+1][y][z] != '.') && (matrix[x+1][y][z] != 'x'))
                     listhead = InsertAdjacency(vertices, x+1, y, z, type, listhead, decoder);
 
-                if( (x-1 >= 0) && (matrix[x-1][y][z] != '@') && (matrix[x-1][y][z] != '.'))
+                if( (x-1 >= 0) && (matrix[x-1][y][z] != '@') && (matrix[x-1][y][z] != '.') && (matrix[x-1][y][z] != 'x'))
                     listhead = InsertAdjacency(vertices, x-1, y, z, type, listhead, decoder);
 
-                if( (y+1 < row) && (matrix[x][y+1][z] != '@') && (matrix[x][y+1][z] != '.'))
+                if( (y+1 < row) && (matrix[x][y+1][z] != '@') && (matrix[x][y+1][z] != '.') && (matrix[x][y+1][z] != 'x'))
                     listhead = InsertAdjacency(vertices, x, y+1, z, type, listhead, decoder);
 
-                if( (y-1 >= 0) && (matrix[x][y-1][z] != '@') && (matrix[x][y-1][z] != '.'))
+                if( (y-1 >= 0) && (matrix[x][y-1][z] != '@') && (matrix[x][y-1][z] != '.') && (matrix[x][y-1][z] != 'x'))
                     listhead = InsertAdjacency(vertices, x, y-1, z, type, listhead, decoder);
 
             }
@@ -108,7 +108,6 @@ ListNode * InsertAdjacency(int vertices, int x, int y, int z, char type, ListNod
 
 int GetAdjacencyVertice(Adjacency * adjacency)
 {
-    int a =adjacency->vertice;
     return adjacency->vertice;
 }
 

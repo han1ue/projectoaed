@@ -85,13 +85,17 @@ int main( int argc, char *argv[])
     Array decoder;
     char * extOut = ".pts";
     int finalflag = 0;
+    int restflag = 1;
 
     /*Verify number of arguments*/
-    if(argc < 3)
+    if(argc > 4 && argc < 3)
     {
         printf("Wrong number of arguments. Must be of the form './gestor parque.cfg parque.inp [parque.res]'");
-        exit(-1);
+        exit(0);
     }
+
+    if(argc == 3)
+        restflag = 0;
 
     /*Open the first file - Parking Lot Description*/
     mapconfig = OpenFile ( mapfile, "r" );
@@ -104,7 +108,9 @@ int main( int argc, char *argv[])
 
     /*Open the second file - Car info file*/
     carconfig = OpenFile ( carfile, "r" );
+
     /*Open the third file - restrictions config*/
+    if(restflag == 1)
     restconfig = OpenFile ( restfile, "r" );
 
     OcuppyParkedCars(parkinglot, carconfig) ; /*Occupies the positions of the cars already parked when the time starts */
@@ -126,9 +132,9 @@ int main( int argc, char *argv[])
 
     while (finalflag == 0)
     {
-          finalflag = HandleCar(parkinglot, carconfig, fpout, timeunit);
-
-  //      HandleRest(parkinglot, restfile);
+        finalflag = HandleCar(parkinglot, carconfig, fpout, timeunit);
+        //if(restflag == 1)
+          //  HandleRest(parkinglot, restfile);
 
         timeunit++;
     }

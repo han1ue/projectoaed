@@ -132,6 +132,7 @@ int escreve_saida(FILE *fp, char *vid, int tk, int pX, int pY, int pZ, char tm)
 
     /* generate output */
     fprintf(fp, "%s %d %d %d %d %c\n", vid, tk, pX, pY, pZ, tm);
+    fprintf(stderr, "%s %d %d %d %d %c\n", vid, tk, pX, pY, pZ, tm);
   }
 
   return(retval);
@@ -143,24 +144,22 @@ void PrintPath(FILE * outputfile, ListNode * carpath, ListNode * footpath, char 
 {
 
   ListNode * carpathaux, * footpathaux;
-  int x, y, z, time = 0, px = -1, py = -1, pz = -1; /*px, py, px are the coordenates that resulted from the previous iteration*/
+  int x, y, z, time = -1, timecompare, px = -1, py = -1, pz = -1; /*px, py, px are the coordenates that resulted from the previous iteration*/
   int position;
   Array decoder = GetDecoder(parkinglot);
-  char direction, pdirection = 'a';
+  char direction, pdirection;
 
   carpathaux = carpath;
 
-  position = *( (int*) getItemLinkedList(carpathaux) );
-  px = GetIP_Coord(position, 'x', decoder);
-  py = GetIP_Coord(position, 'y', decoder);
-  pz = GetIP_Coord(position, 'z', decoder);
+    position = *( (int*) getItemLinkedList(carpathaux) );
+    px = GetIP_Coord(position, 'x', decoder);
+    py = GetIP_Coord(position, 'y', decoder);
+    pz = GetIP_Coord(position, 'z', decoder);
 
   for( carpathaux = getNextNodeLinkedList(carpathaux); carpathaux !=NULL; carpathaux = getNextNodeLinkedList(carpathaux) )
   {
     time++;
 
-    if( getNextNodeLinkedList(carpathaux) != NULL )
-      {
       		position = *( (int*) getItemLinkedList(carpathaux) );
       		x = GetIP_Coord(position, 'x', decoder);
             y = GetIP_Coord(position, 'y', decoder);
@@ -173,49 +172,54 @@ void PrintPath(FILE * outputfile, ListNode * carpath, ListNode * footpath, char 
           else if( (z - pz) != 0 )
             direction = 'z';
 
-            //if( direction != pdirection )
-            escreve_saida( outputfile, carname, entrytime + time, x , y , z, 'm');
+            /*We dont write to the file in the first iteration after the car leaves the entry, but we need to find the direction*/
+            if( direction != pdirection && time != 0)
+            {
+                escreve_saida( outputfile, carname, entrytime + time, px , py , pz, 'm');
+            }
 
-      		px = x;
-      		py = y;
-      		pz = z;
-      		pdirection = direction;
+            px = x;
+            py = y;
+            pz = z;
+            pdirection = direction;
     	}
-      else
-        escreve_saida( outputfile, carname, entrytime + time, x, y, z, 'e');
-  }
 
-   AddParkedCar(carname, x, y, z, parkinglot);
+            time++;
+
+            timecompare = time;
+
+            escreve_saida( outputfile, carname, entrytime + time, px, py, pz, 'e');
+            AddParkedCar(carname, x, y, z, parkinglot);
+
+    time--;
 
   for( footpathaux = footpath; footpathaux !=NULL; footpathaux = getNextNodeLinkedList(footpathaux) )
   {
     time++;
 
-    if( getNextNodeLinkedList(footpathaux) != NULL )
-      {
-          position = *( (int*) getItemLinkedList(footpathaux) );
-          x = GetIP_Coord(position, 'x', decoder);
-          y = GetIP_Coord(position, 'y', decoder);
-          z = GetIP_Coord(position, 'z', decoder);
+    position = *( (int*) getItemLinkedList(footpathaux) );
+    x = GetIP_Coord(position, 'x', decoder);
+    y = GetIP_Coord(position, 'y', decoder);
+    z = GetIP_Coord(position, 'z', decoder);
 
-          if( (x - px) != 0 )
-            direction = 'x';
-          else if( (y - py) != 0 )
-            direction = 'y';
-          else if( (z - pz) != 0 )
-            direction = 'z';
+    if( (x - px) != 0 )
+        direction = 'x';
+    else if( (y - py) != 0 )
+        direction = 'y';
+    else if( (z - pz) != 0 )
+        direction = 'z';
 
-            if( direction != pdirection )
-   				escreve_saida( outputfile, carname, entrytime + time, x , y , z, 'p');
+    if( direction != pdirection && time != timecompare)
+        escreve_saida( outputfile, carname, entrytime + time, px , py , pz, 'p');
 
-      		px = x;
-      		py = y;
-      		pz = z;
-      		pdirection = direction;
+    px = x;
+    py = y;
+    pz = z;
+    pdirection = direction;
     }
-      else
-    escreve_saida( outputfile, carname, entrytime + time, x, y, z, 'a');
+
+    time++;
+    escreve_saida( outputfile, carname, entrytime + time, px, py, pz, 'a');
 
   }
 
-}
