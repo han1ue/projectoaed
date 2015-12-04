@@ -73,18 +73,21 @@ ParkingLot * MapInit( FILE* mapconfig )
 
 int main( int argc, char *argv[])
 {
-    FILE* mapconfig, *carconfig, *resconfig; /*variables to the files being opened*/
+    FILE* mapconfig, *carconfig, *restconfig, *fpout; /*variables to the files being opened*/
+    char*fileNameOut;
+    char* aux;
     char* mapfile = argv[1];
     char* carfile = argv[2];
-    char* restrictionsfile = argv[3];
+    char* restfile = argv[3];
     ParkingLot* parkinglot; /*Pointer to the parkinglot struct */
     ListNode * eventlist, * carlist;
-    int vertices, timeunit = 0;
+    int vertices, i, timeunit = 0; /*Because we need to handle cars  */
     Array decoder;
-
+    char * extOut = ".pts";
+    int finalflag = 0;
 
     /*Verify number of arguments*/
-    if(argc != 4)
+    if(argc < 3)
     {
         printf("Wrong number of arguments. Must be of the form './gestor parque.cfg parque.inp [parque.res]'");
         exit(-1);
@@ -99,30 +102,37 @@ int main( int argc, char *argv[])
     /* Closes the file we were reading the map from*/
     fclose(mapconfig);
 
-    /*Open the 2 other files - car info and the restrictions*/
+    /*Open the second file - Car info file*/
     carconfig = OpenFile ( carfile, "r" );
-    resconfig = OpenFile ( restrictionsfile, "r" );
+    /*Open the third file - restrictions config*/
+    restconfig = OpenFile ( restfile, "r" );
 
-    /*Treat the data in the car config file and the restriction file, initializing an eventlist (queue)*/
-    eventlist = EventListInit( carconfig, resconfig );
-    PrintEventList(eventlist);
+    OcuppyParkedCars(parkinglot, carconfig) ; /*Occupies the positions of the cars already parked when the time starts */
 
-    /* Closes the file we were reading the map from*/
-    fclose(carconfig);
-    fclose(resconfig);
+    rewind(carconfig);
 
-    /*Use the event list to make a list featuring the cars present in the park at time = 0*/
-    carlist = CarListInit(eventlist, parkinglot);
+     /* Determine output filename */
+    fileNameOut = ( char* )malloc( ( strlen( argv[1] ) + 2 ) * sizeof( char ) );
+    if( fileNameOut == NULL ){
+        printf("Memory allocation error for fileNameOut.\n" );
+        exit(0);
+    }
+    strcpy( fileNameOut, argv[1] );
+    for (i = 0; fileNameOut[i] != '.'; i++){}
+    fileNameOut[i] = '\0';
+    strcat(fileNameOut, extOut);
+    /* Open output file */
+    fpout  = OpenFile(fileNameOut, "w");
 
-
-    while(timeunit < 5)// funcaoverificarseacabou
+    while (finalflag == 0)
     {
-        eventlist = ExecuteEvent(eventlist, &carlist, timeunit, parkinglot);
+          finalflag = HandleCar(parkinglot, carconfig, fpout, timeunit);
 
-        //mover quem tem de ser movido (cars com status = 1)
+  //      HandleRest(parkinglot, restfile);
 
-        timeunit ++;
+        timeunit++;
     }
 
+    fclose(fpout);
     return 0;
 }

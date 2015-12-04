@@ -15,3 +15,6 @@ ListNode * GetAccesses(ParkingLot*);
 int GetFreeSpots(ParkingLot* parkinglot);
 void IncFreeSpots(ParkingLot* parkinglot);
 void DecFreeSpots(ParkingLot* parkinglot);
+ListNode* GetParkedListHead(ParkingLot*);
+void SetParkedListHead(ParkingLot*, ListNode*);
+ListNode * RemoveListHead(ListNode* );

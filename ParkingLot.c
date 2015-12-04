@@ -3,9 +3,11 @@
 
 struct parkinglot
 {
-    Graph* g;				     	 		/*Graph that holds the info about the adj blocks*/
-    Array graphdecoder; 			/*Pointer to array of pointers that contain the info about every vertice in the graph*/
-    ListNode * accesseshead;  /*List of indexes of the graphdecoder corresponding to an access to reduce the search cost*/
+    Graph* g;				     	 	/*Graph that holds the info about the adj blocks*/
+    Array graphdecoder; 			    /*Pointer to array of pointers that contain the info about every vertice in the graph*/
+    ListNode * accesseshead;            /*List of indexes of the graphdecoder corresponding to an access to reduce the search cost*/
+    ListNode * queuehead;
+    ListNode * parkedcarshead;
   	int freespots;						/*Number of free parking spots in the park */
 };
 
@@ -43,8 +45,10 @@ ParkingLot * InitParkingLot( FILE * mapconfig, int col, int row, int floors, int
     parkinglot->graphdecoder = GraphDecoderInit(matrix, col, row, floors, *vertices, &(parkinglot->freespots) ); /*Creates array cointaining the Decoder for the graph positions*/
     parkinglot->g = GraphInit(*vertices, matrix, parkinglot->graphdecoder, col, row, floors);
     parkinglot->accesseshead = InitAccesses(accesses, parkinglot->graphdecoder, *vertices);
+    parkinglot->parkedcarshead = ListInit();
+    parkinglot->queuehead = ListInit();
 
-    //PrintGraph(GetGraph(parkinglot), *vertices);  /*prints the graph in the parkinglot */
+    PrintGraph(GetGraph(parkinglot), *vertices);  /*prints the graph in the parkinglot */
     FreeMatrix(matrix, col, row, floors);
 
     return (parkinglot);
@@ -148,7 +152,7 @@ ListNode * InitAccesses(int accesses, Array decoder, int vertices)
 {
     int i, *index;
     char type;
-  	ListNode* accesseshead = ListInit(accesseshead);
+  	ListNode* accesseshead = ListInit();
 
     for(i = 0; i < vertices; i++) /*Goes through every vertice in the decoder to see if it is or not an access */
     {
@@ -264,4 +268,25 @@ void DecFreeSpots(ParkingLot* parkinglot)
     (parkinglot->freespots)++;
 
     return;
+}
+
+void SetParkedListHead(ParkingLot* parkinglot, ListNode* head)
+{
+    parkinglot->parkedcarshead = head;
+}
+
+ListNode* GetParkedListHead(ParkingLot* parkinglot)
+{
+    return (parkinglot->parkedcarshead);
+}
+
+
+void SetQueueHead(ParkingLot* parkinglot, ListNode* head)
+{
+    parkinglot->queuehead = head;
+}
+
+ListNode* GetQueueHead(ParkingLot* parkinglot)
+{
+    return (parkinglot->queuehead);
 }

@@ -6,10 +6,9 @@ struct listnode
     struct listnode * next;
 };
 
-ListNode * ListInit(ListNode* head)
+ListNode * ListInit()
 {
-    head = NULL;
-    return head;
+    return NULL;
 }
 
 ListNode* AddNodeToListHead(ListNode *head, Item this)
@@ -32,6 +31,36 @@ Item getItemLinkedList(ListNode * node)
 
     return node->this;
 }
+
+ListNode * RemoveListHead(ListNode * head)
+{
+  ListNode * newhead;
+
+  if(head == NULL)
+    return NULL;
+
+  newhead = head->next;
+
+  free(head->this);
+  free(head);
+
+  return newhead;
+}
+
+void AddNodeToTail(ListNode* head, Item this)
+{
+    ListNode* newnode = (ListNode*)malloc(sizeof(ListNode));
+    ListNode* aux;
+    newnode->this = this;
+
+    aux = head;
+    while(aux->next != NULL)
+        aux = aux->next;
+
+    aux->next = newnode;
+    newnode->next = NULL;
+}
+
 
 void ModifyPointerNext(ListNode* node, ListNode* pointer)
 {

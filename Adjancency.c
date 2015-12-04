@@ -48,7 +48,7 @@ ListNode * InsertAdjacency(int vertices, int x, int y, int z, char type, ListNod
         Array adj;
         int i, x, y, z, *vertice;
         char type;
-        ListNode * listhead = ListInit(listhead);
+        ListNode * listhead = ListInit();
 
         adj = InitArray(vertices);
 

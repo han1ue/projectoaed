@@ -195,7 +195,7 @@ void OccupyPos(int i, Array decoder, int vertices)
 {
     InterestPoint * IP;
 
-    IP = (InterestPoint*) decoder[i];
+    IP = (InterestPoint*) GetArrayNodeItem(i, decoder);
     IP->type = 'x';
 }
 
@@ -214,7 +214,7 @@ void FreePos(int i, Array decoder, int vertices)
 {
     InterestPoint * IP;
 
-    IP = (InterestPoint*) decoder[i];
+    IP = (InterestPoint*) GetArrayNodeItem(i, decoder);
     IP->type = '.';
 }
 
@@ -256,72 +256,10 @@ void ReleasePos(int i, Array decoder)
     IP->flagres = 0;
 }
 
-/******************************************************************************
- * HandleRestriction
- *
- * Arguments: auxevent - restriction event that we want to handle
- *						decoder - array that contains the vertices
- *						vertices - nuber of vertices in the array
- *
- * Returns: decides how to handle a restriction event
- *
- *****************************************************************************/
-
-ListNode * HandleRestriction(Graph * graph, ListNode * accesseshead, Event * auxevent, Array decoder, ListNode * carlisthead, int vertices, ParkingLot * parkinglot)
-{
-  int x, y, z, flagres;
-  int i;
-  int counter = 0, floor;
-  InterestPoint * aux;
-  char type;
-
-  x = GetEventCoord(auxevent, 'x');
-  y = GetEventCoord(auxevent, 'y');
-  z = GetEventCoord(auxevent, 'z');
-
-  if(y == -1) /*If its a floor restriction */
-  {
-    floor = GetIP_Coord(counter, 'z', decoder);
-    while(floor <= z && counter < vertices) /*Stops once we finish restricting the floor or its the last vertice*/
-    {
-      floor = GetIP_Coord(counter, 'z', decoder);
-      if(floor == z && GetIP_Type(counter, decoder) == '.') /*We only change the type of the parking spots becaus eits still possible to go by foot*/
-      {
-        ChangeIP_Type(counter, decoder, 'f'); /*Changes the type of this point on the map to f to show that is floor restricted*/
-      }
-      else if(floor == z && GetIP_Type(counter, decoder) == 'f') /*We want to "kill" the restriction and go back to regular parking*/
-      {
-        ChangeIP_Type(counter, decoder, '.'); /*Changes the type of this point on the map back to parking spot free from restrictions*/
-      }
-      counter++;
-    }
-  }
-  else
-  {
-    i = FindIP(vertices, x, y, z, decoder);
-    type = GetIP_Type(i, decoder);
-    flagres = GetFlagRes(i, decoder);
-  	if(flagres == 0) /*if its not already restricted then we have to restrict this pos*/
-    {
-        RestrictPos(i, decoder);
-        if(type == '.')
-            DecFreeSpots(parkinglot);
-    }
-    else
-    {
-        ReleasePos(i, decoder); /*if it was restricted then we have to remove the restriction since its the second time it shows on the event list meaning its over*/
-        carlisthead = HandleQueue(graph, decoder, accesseshead, carlisthead, vertices);
-        if(type == '.')
-            IncFreeSpots(parkinglot);
-  }
-
-    return carlisthead;
- }
-}
 
 ListNode * FindFreeSpots(Array decoder, int vertices)
 {
-  ListNode * freespots = ListInit(freespots);
+  ListNode * freespots = ListInit();
   int i;
   int * vertice;
 
