@@ -54,7 +54,7 @@ void GetParkedCarCoords(ParkingLot * parkinglot, char * carid, int * x, int * y,
   aux = parkedcarhead;
 
   while( strcmp ( ( (ParkedCar*) getItemLinkedList(aux) ) -> carid , carid ) != 0)
-    getNextNodeLinkedList(aux);
+    aux = getNextNodeLinkedList(aux);
 
   *x = ( (ParkedCar*) getItemLinkedList(aux) ) -> x;
   *y = ( (ParkedCar*) getItemLinkedList(aux) ) -> y;

@@ -140,12 +140,12 @@ int escreve_saida(FILE *fp, char *vid, int tk, int pX, int pY, int pZ, char tm)
 /*end of function */
 
 
-void PrintPath(FILE * outputfile, ListNode * carpath, ListNode * footpath, char * carname, int entrytime, ParkingLot * parkinglot)
+void PrintPath(FILE * outputfile, ListNode * carpath, ListNode * footpath, char * carname, int entrytime, ParkingLot * parkinglot, int pathweight)
 {
 
   ListNode * carpathaux, * footpathaux;
   int x, y, z, time = -1, timecompare, px = -1, py = -1, pz = -1; /*px, py, px are the coordenates that resulted from the previous iteration*/
-  int position;
+  int position, pposition, parkingtime;
   Array decoder = GetDecoder(parkinglot);
   char direction, pdirection;
 
@@ -175,12 +175,17 @@ void PrintPath(FILE * outputfile, ListNode * carpath, ListNode * footpath, char 
             /*We dont write to the file in the first iteration after the car leaves the entry, but we need to find the direction*/
             if( direction != pdirection && time != 0)
             {
+
                 escreve_saida( outputfile, carname, entrytime + time, px , py , pz, 'm');
+
+                if(GetIP_Type(position, decoder) == 'u' || GetIP_Type(position, decoder) == 'd')
+                    time++;
             }
 
             px = x;
             py = y;
             pz = z;
+            pposition = position;
             pdirection = direction;
     	}
 
@@ -188,6 +193,7 @@ void PrintPath(FILE * outputfile, ListNode * carpath, ListNode * footpath, char 
 
             timecompare = time;
 
+            parkingtime = entrytime + time;
             escreve_saida( outputfile, carname, entrytime + time, px, py, pz, 'e');
             AddParkedCar(carname, x, y, z, parkinglot);
 
@@ -209,17 +215,28 @@ void PrintPath(FILE * outputfile, ListNode * carpath, ListNode * footpath, char 
     else if( (z - pz) != 0 )
         direction = 'z';
 
-    if( direction != pdirection && time != timecompare)
+    if( (direction != pdirection && time != timecompare) || (time == timecompare+1) )
+    {
         escreve_saida( outputfile, carname, entrytime + time, px , py , pz, 'p');
+
+        if(GetIP_Type(position, decoder) == 'u' || GetIP_Type(position, decoder) == 'd')
+                    time++;
+    }
+
 
     px = x;
     py = y;
     pz = z;
+    pposition = position;
     pdirection = direction;
     }
 
     time++;
+
     escreve_saida( outputfile, carname, entrytime + time, px, py, pz, 'a');
+
+    /*Writes the balance of the path*/
+    escreve_saida( outputfile, carname, entrytime, parkingtime, entrytime + time, pathweight, 'x');
 
   }
 

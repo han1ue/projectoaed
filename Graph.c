@@ -42,7 +42,11 @@ void PrintGraph(Graph* g, int vertices)
         {
             printf("V:%d --> ", i);  /*Prints the head of the adj list we are printing */
             head = (ListNode*) GetArrayNodeItem(i, g->adj);
-            PrintIntList(head);
+            if (head != NULL)
+                PrintIntList(head);
+            else
+                printf("No adjs");
+
             printf("\n");
 
         }

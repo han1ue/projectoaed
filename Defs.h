@@ -12,7 +12,9 @@
 #include "ParkingLot.h"
 #include "ParkedCar.h"
 #include "HandleCar.h"
+#include "RestList.h"
 #include "Heap.h"
+#include "Dijkstra.h"
 
 
 #define MAX_STRING 200

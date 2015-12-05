@@ -61,7 +61,6 @@ ListNode * InsertAdjacency(int vertices, int x, int y, int z, char type, ListNod
             z = GetIP_Coord(i, 'z', decoder);		    /*Gets the third int of the InterestPoint i in the array */
             type = GetIP_Type(i, decoder);				  /*Gets the type of the InterestPoint i in the array */
 
-
             /*Special case for inserting adj vertices for parking spots because we dont want them to be adjacent with other parking spots*/
             if ( type == '.' || type == 'x')
             {

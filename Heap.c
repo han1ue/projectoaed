@@ -234,6 +234,23 @@ int GetHeapN_Elements(Heap* h)
     return (h->n_elements);
 }
 
+int GetFirstElement(Heap* h)
+{
+    return ( *((int*) h->heapdata[0]) );
+}
+
+int IsAllInfinity(Heap* h)
+{
+    int i;
+    for(i=0;i<h->n_elements;i++)
+    {
+        if( *( (int*) h->heapdata[i]) != 10000)
+        {
+            return 0;
+        }
+    }
+    return 1;
+}
 
 
 

@@ -124,7 +124,7 @@ char *** MatrixInit(int * vertices, int * ramps, FILE * mapconfig, int col, int 
             }
             if(string[0] == 'A')
             {
-                if(sscanf(string, "%*c%*d %d %d %d %c\n", &posx, &posy, &posz, &type) != 4) /* se nao der provavelmente é dos * para suprimir o nome do acesso */
+                if(sscanf(string, "%*s  %d %d %d %c\n", &posx, &posy, &posz, &type) != 4)
                 {
                     printf("Error reading the accesses info from file string.");
                     exit(-1);

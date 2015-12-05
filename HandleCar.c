@@ -16,7 +16,7 @@ int HandleCar(ParkingLot* parkinglot, FILE* carfile, FILE* outputfile, int timeu
     static Car* newcar = NULL;
     char carname[5];
     char string[MAX_STRING];
-    int finalflag = 0;
+    int pathweight, finalflag = 0;
     ListNode *carpath = ListInit();
     ListNode *footpath = ListInit();
 
@@ -46,10 +46,10 @@ int HandleCar(ParkingLot* parkinglot, FILE* carfile, FILE* outputfile, int timeu
             if(GetFreeSpots(parkinglot) != 0)
             {
 
-                PathCalculator(GetGraph(parkinglot), FindIP(GetVertices(parkinglot), newcar->x, newcar->y, newcar->z, GetDecoder(parkinglot)), &carpath, &footpath, GetDecoder(parkinglot), GetAccesses(parkinglot), newcar->type, GetVertices(parkinglot));
+                pathweight = PathCalculator(GetGraph(parkinglot), FindIP(GetVertices(parkinglot), newcar->x, newcar->y, newcar->z, GetDecoder(parkinglot)), &carpath, &footpath, GetDecoder(parkinglot), GetAccesses(parkinglot), newcar->type, GetVertices(parkinglot));
 
 
-                PrintPath(outputfile, carpath, footpath, newcar->carid, newcar->time, parkinglot);
+                PrintPath(outputfile, carpath, footpath, newcar->carid, newcar->time, parkinglot, pathweight);
 
                 GetParkedCarCoords(parkinglot, newcar->carid, &(newcar->x), &(newcar->y), &(newcar->z));/*Gets the coordinates where gestor parked the car with this carid */
                 OccupyPos(FindIP(GetVertices(parkinglot), newcar->x, newcar->y, newcar->z, GetDecoder(parkinglot)),GetDecoder(parkinglot), GetVertices(parkinglot));
@@ -120,6 +120,7 @@ void HandleQueue(ParkingLot * parkinglot, FILE* outputfile, int time)
   ListNode* carpath = ListInit();
   ListNode* footpath = ListInit();
   Car* queuecar;
+  int pathweight;
 
   if(queuehead == NULL)
     return;
@@ -128,8 +129,8 @@ void HandleQueue(ParkingLot * parkinglot, FILE* outputfile, int time)
 
     queuecar = (Car*) getItemLinkedList(queuehead);
 
-    PathCalculator(GetGraph(parkinglot), FindIP(GetVertices(parkinglot), queuecar->x, queuecar->y, queuecar->z, GetDecoder(parkinglot)), &carpath, &footpath, GetDecoder(parkinglot), GetAccesses(parkinglot), queuecar->type, GetVertices(parkinglot));
-    PrintPath(outputfile, carpath, footpath, queuecar->carid, time, parkinglot);
+    pathweight = PathCalculator(GetGraph(parkinglot), FindIP(GetVertices(parkinglot), queuecar->x, queuecar->y, queuecar->z, GetDecoder(parkinglot)), &carpath, &footpath, GetDecoder(parkinglot), GetAccesses(parkinglot), queuecar->type, GetVertices(parkinglot));
+    PrintPath(outputfile, carpath, footpath, queuecar->carid, time, parkinglot, pathweight);
     SetQueueHead(parkinglot, RemoveListHead(queuehead) );
     DecFreeSpots(parkinglot);
   }
