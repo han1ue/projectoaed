@@ -9,14 +9,13 @@ struct reststruct
     char flag;
 };
 
-ListNode* RestInit(parkinglot, restfile)
+ListNode* RestInit( FILE* restfile)
 {
 
     char string[MAX_STRING];
-    int time, x, y, z, varcounter, tinit, tend;
-    int i=0;
+    int x, y, z, varcounter, tinit, tend;
     ListNode *head = NULL;
-    Rest * auxrest, * auxrest2, *findcarauxrest;
+    Rest * auxrest, * auxrest2;
       /* Goes through every restriction rest in the restriction file */
     while( fgets(string, MAX_STRING, restfile) != NULL)
     {
@@ -67,7 +66,7 @@ ListNode* RestInit(parkinglot, restfile)
         else
         {
             printf("Error. Confliting types or bad data format on rest config file.");
-            exit(-1);
+            exit(0);
         }
 
         head = insertSortedLinkedList(head, (Item) auxrest, CompareRestTime, 1);
@@ -107,7 +106,7 @@ int GetRestTime(Rest *Rest)
 
 int CompareRestTime(Item Rest1, Item Rest2, int direction)
 {
-    int r;
+    int r=0;
 
     if (direction == 1)
     {
@@ -141,8 +140,7 @@ ListNode * HandleRest(ListNode * resthead, ParkingLot * parkinglot, int timeunit
 {
       Rest * rest;
       ListNode * aux;
-      int i;
-
+      int i=0;
       /*Get the head of the restricion list to the aux pointer for the first while comparation*/
       aux = resthead;
 
@@ -156,35 +154,32 @@ ListNode * HandleRest(ListNode * resthead, ParkingLot * parkinglot, int timeunit
       {
           if(GetRestFlag(rest) == 'p')
           {
-            i = FindIP( GetRestCoord(rest, 'x'), GetRestCoord(rest, 'y'), GetRestCoord(rest, 'z') );
+            i = FindIP(GetVertices(parkinglot), GetRestCoord(rest, 'x'), GetRestCoord(rest, 'y'), GetRestCoord(rest, 'z'), GetDecoder(parkinglot) );
 
-            if(GetIP_FlagRes(i, GetDecoder(parkinglot) ) == 1)
+            if(GetIP_Flagres(i, GetDecoder(parkinglot) ) == 1)
              {
                  ReleasePos(i, GetDecoder(parkinglot) );
                  IncFreeSpots(parkinglot);
                 if( GetFreeSpots(parkinglot) != 0)
-                  HandleQueue(parkinglot, timeunit, outputfile);
+                  HandleQueue(parkinglot, outputfile, timeunit);
               }
             else
             {
                 RestrictPos(i, GetDecoder(parkinglot) );
                 DecFreeSpots(parkinglot);
             }
-
+          }
           else if(GetRestFlag(rest) == 'f')
           {
-            if( IsFloorRestricted( GetRestCoord(rest, 'z'), GetDecoder(parkinglot) ) )
+            if( IsFloorRestricted( GetRestCoord(rest, 'z'), parkinglot ) )
             {
             	ReleaseWholeFloor(i, parkinglot ); /* la dento temos de fazer bue release spots */
               if( GetFreeSpots(parkinglot) != 0)
-           			HandleQueue(parkinglot, timeunit, outputfile);
+           			HandleQueue(parkinglot, outputfile, timeunit);
             }
             else
               RestrictWholeFloor( GetRestCoord(rest, 'z'), parkinglot );
           }
-
-
-        }
 
 
         aux = getNextNodeLinkedList(aux);
@@ -194,21 +189,6 @@ ListNode * HandleRest(ListNode * resthead, ParkingLot * parkinglot, int timeunit
       /*Return the new head of the linked list*/
       return aux;
 
-}
-
-/******************************************************************************
- * GetRestTime
- *
- * Arguments: rest - rest we want to get the time from
- *
- *
- * Returns: time of the chosen rest
- *
- *****************************************************************************/
-
-int GetRestTime(Rest *rest)
-{
-    return rest->time;
 }
 
 
@@ -228,7 +208,7 @@ int GetRestCoord(Rest* rest, char coord)
     else
     {
         printf("Error. You can only request x, y or z.");
-        exit(-1);
+        exit(0);
     }
 }
 
@@ -239,42 +219,38 @@ int IsFloorRestricted( int z, ParkingLot * parkinglot)
 
   for(i = 0; (i < vertices) && (GetIP_Coord(i, 'z', GetDecoder(parkinglot) ) <= z) ; i++)
   {
-    if( (GetIP_Coord(i, 'z', GetDecoder(parkinglot) ) == z) &&
-       (GetIP_FlagRes(i, GetDecoder(parkinglot) ) == 0) &&
-       ((GetIP_Type(i, GetDecoder(parkinglot) == '.' )
+    if( (GetIP_Coord(i, 'z', GetDecoder(parkinglot)) == z) && (GetIP_Flagres(i, GetDecoder(parkinglot)) == 0) && (GetIP_Type(i, GetDecoder(parkinglot)) == '.') )
        return 0;
   }
 
     return 1;
 }
 
-void ReleaseWholeFloor( int z, Parking Lot * parkinglot )
+void ReleaseWholeFloor( int z, ParkingLot * parkinglot )
 {
   int i;
   int vertices = GetVertices(parkinglot);
 
   for(i = 0; (i < vertices) && (GetIP_Coord(i, 'z', GetDecoder(parkinglot) ) <= z) ; i++)
   {
-    if( (GetIP_Coord(i, 'z', GetDecoder(parkinglot) ) == z) &&
-       (GetIP_FlagRes(i, GetDecoder(parkinglot) ) == 1) &&
-       ((GetIP_Type(i, GetDecoder(parkinglot) == '.' )
+    if( (GetIP_Coord(i, 'z', GetDecoder(parkinglot)) == z) && (GetIP_Flagres(i, GetDecoder(parkinglot)) == 1) && (GetIP_Type(i, GetDecoder(parkinglot)) == '.' ))
     {
       ReleasePos(i, GetDecoder(parkinglot) );
       IncFreeSpots(parkinglot);
-		}
+    }
+  }
 }
-void RestrictWholeFloor( int z, Parking Lot * parkinglot )
+void RestrictWholeFloor( int z, ParkingLot * parkinglot )
 {
   int i;
   int vertices = GetVertices(parkinglot);
 
   for(i = 0; (i < vertices) && (GetIP_Coord(i, 'z', GetDecoder(parkinglot) ) <= z) ; i++)
   {
-    if( (GetIP_Coord(i, 'z', GetDecoder(parkinglot) ) == z) &&
-       (GetIP_FlagRes(i, GetDecoder(parkinglot) ) == 0) &&
-       ((GetIP_Type(i, GetDecoder(parkinglot) == '.' )
+    if( (GetIP_Coord(i, 'z', GetDecoder(parkinglot)) == z) && (GetIP_Flagres(i, GetDecoder(parkinglot)) == 0) && (GetIP_Type(i, GetDecoder(parkinglot)) == '.' ))
     {
       RestrictPos(i, GetDecoder(parkinglot) );
       DecFreeSpots(parkinglot);
-		}
+    }
+  }
 }

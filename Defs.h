@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "client.h"
 #include "ArrayList.h"
 #include "Adjacency.h"
 #include "Graph.h"
@@ -15,6 +16,7 @@
 #include "RestList.h"
 #include "Heap.h"
 #include "Dijkstra.h"
+#include "Output.h"
 
 
 #define MAX_STRING 200
@@ -23,3 +25,4 @@
 #endif
 
 typedef void *Item;
+

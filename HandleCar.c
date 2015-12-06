@@ -23,7 +23,12 @@ int HandleCar(ParkingLot* parkinglot, FILE* carfile, FILE* outputfile, int timeu
     if(newcar == NULL) /*Inicializes the ponter ONLY in the first time we enter this function */
     {
         newcar = (Car*)malloc(sizeof(Car));
-        fgets(string, MAX_STRING, carfile);
+        VerifyMalloc((Item) newcar);
+        if(fgets(string, MAX_STRING, carfile) == NULL)
+        {
+            printf("Error reading file.");
+            exit(0);
+        }
         if ( sscanf(string, "%s %d %c %d %d %d ", carname, &(newcar->time), &(newcar->type), &(newcar->x), &(newcar->y), &(newcar->z)) != 6)
         {
              newcar->x = -1;
@@ -32,6 +37,7 @@ int HandleCar(ParkingLot* parkinglot, FILE* carfile, FILE* outputfile, int timeu
         }
 
         newcar->carid = (char*) malloc(sizeof(char) * ( strlen(carname) + 1 ) );
+        VerifyMalloc((Item) newcar->carid);
 
         strcpy(newcar->carid, carname );
     }
@@ -51,16 +57,17 @@ int HandleCar(ParkingLot* parkinglot, FILE* carfile, FILE* outputfile, int timeu
 
                 PrintPath(outputfile, carpath, footpath, newcar->carid, newcar->time, parkinglot, pathweight);
 
-                GetParkedCarCoords(parkinglot, newcar->carid, &(newcar->x), &(newcar->y), &(newcar->z));/*Gets the coordinates where gestor parked the car with this carid */
-                OccupyPos(FindIP(GetVertices(parkinglot), newcar->x, newcar->y, newcar->z, GetDecoder(parkinglot)),GetDecoder(parkinglot), GetVertices(parkinglot));
-                DecFreeSpots(parkinglot);
+                freeLinkedList(carpath);
+                freeLinkedList(footpath);
 
-                //falta fazer o resumo aka cena com "x"
+                GetParkedCarCoords(parkinglot, newcar->carid, &(newcar->x), &(newcar->y), &(newcar->z));/*Gets the coordinates where gestor parked the car with this carid */
+                OccupyPos(FindIP(GetVertices(parkinglot), newcar->x, newcar->y, newcar->z, GetDecoder(parkinglot)),GetDecoder(parkinglot));
+                DecFreeSpots(parkinglot);
             }
             else
             {
                 InsertinQueue(parkinglot, newcar);
-                PrintQueueCars(parkinglot);
+                /**PrintQueueCars(parkinglot); */
             }
         }
         else
@@ -73,9 +80,8 @@ int HandleCar(ParkingLot* parkinglot, FILE* carfile, FILE* outputfile, int timeu
                 escreve_saida(outputfile, newcar->carid, newcar->time, newcar->x, newcar->y, newcar->z, 's');
             }
             IncFreeSpots(parkinglot);
-            FreePos(FindIP(GetVertices(parkinglot), newcar->x, newcar->y, newcar->z, GetDecoder(parkinglot)),GetDecoder(parkinglot), GetVertices(parkinglot));
+            FreePos(FindIP(GetVertices(parkinglot), newcar->x, newcar->y, newcar->z, GetDecoder(parkinglot)),GetDecoder(parkinglot));
             HandleQueue(parkinglot, outputfile, newcar->time);
-            //tratar da saída - libertar a said, imprimir  saida e handle aueue
         }
 
         if (fgets(string, MAX_STRING, carfile) == NULL) /* Get a new car from the file */
@@ -92,6 +98,11 @@ int HandleCar(ParkingLot* parkinglot, FILE* carfile, FILE* outputfile, int timeu
         strcpy(newcar->carid, carname);
     }
 
+    if(finalflag == 1)
+    {
+        free(newcar->carid);
+        free(newcar);
+    }
 
     return finalflag;
 }
@@ -99,6 +110,7 @@ int HandleCar(ParkingLot* parkinglot, FILE* carfile, FILE* outputfile, int timeu
 void InsertinQueue(ParkingLot * parkinglot, Car * newcar)
 {
     Car* queuedcar = (Car*)malloc(sizeof(Car));
+    VerifyMalloc((Item) queuedcar);
 
     queuedcar->carid = (char*) malloc( sizeof(char) * ( strlen(newcar->carid) + 1 ) );
     strcpy(queuedcar->carid, newcar->carid);
@@ -131,6 +143,10 @@ void HandleQueue(ParkingLot * parkinglot, FILE* outputfile, int time)
 
     pathweight = PathCalculator(GetGraph(parkinglot), FindIP(GetVertices(parkinglot), queuecar->x, queuecar->y, queuecar->z, GetDecoder(parkinglot)), &carpath, &footpath, GetDecoder(parkinglot), GetAccesses(parkinglot), queuecar->type, GetVertices(parkinglot));
     PrintPath(outputfile, carpath, footpath, queuecar->carid, time, parkinglot, pathweight);
+
+    freeLinkedList(carpath);
+    freeLinkedList(footpath);
+
     SetQueueHead(parkinglot, RemoveListHead(queuehead) );
     DecFreeSpots(parkinglot);
   }

@@ -1,10 +1,5 @@
 #include "Defs.h"
 
-struct arraynode
-{
-  Item this;
-};
-
 /******************************************************************************
  * InitArray
  *
@@ -18,43 +13,30 @@ Array InitArray(int size)
   Array array;
   int i;
 
-  array = (Array) malloc( sizeof(ArrayNode*) * size );
+  array = (Array) malloc( sizeof(Item) * size );
   VerifyMalloc( (Item) array );
   for(i = 0; i < size; i++)
   {
-    array[i] = (ArrayNode*) malloc( sizeof(ArrayNode) );
-  	VerifyMalloc( array[i] );
-  	array[i]->this = NULL;
+  	array[i] = NULL;
   }
 
   return array;
 }
 
-/******************************************************************************
- * GetArrayNodeItem
- *
- * Arguments: position - position in the array where we want to get them item from
- *						array - pointer to the array in which we want to get them item from
- *
- * Returns: item we wanted to get
- *
- *****************************************************************************/
-Item GetArrayNodeItem(int position, Array array)
+Item GetArrayNode(int position, Array array)
 {
   /* Check if position is not empty                                   */
   if(array[position] == NULL)
   {
     printf("Error: The position %d in the array is NULL", position);
-   exit(-1);
-  }
+   exit(0);
+  };
 
-  Item a = array[position]->this;
-
-  return array[position]->this;
+  return array[position];
 }
 
 /******************************************************************************
- * ModifyArrayNodeItem
+ * ModifyArrayNode
  *
  * Arguments: position - position in the array where we want to modify the item
  *            pointer - info we want to insert in this position of the array
@@ -63,14 +45,12 @@ Item GetArrayNodeItem(int position, Array array)
  * Returns: -
  *
  *****************************************************************************/
-Item ModifyArrayNodeItem(int position, Item pointer, Array array)
+void ModifyArrayNode(int position, Item pointer, Array array)
 {
-  array[position]->this = pointer;
-
-  return (array[position]->this);
+  array[position] = pointer;
 }
 /******************************************************************************
- * DeleteNodeItem
+ * DeleteNode
  *
  * Arguments: position - position of the array we want to "delete" from the array
  *						array - pointer to the array in which we want to delete the position
@@ -78,7 +58,7 @@ Item ModifyArrayNodeItem(int position, Item pointer, Array array)
  * Returns: -
  *
  *****************************************************************************/
-void DeleteNodeItem(int position, Array array)
+void DeleteNode(int position, Array array)
 {
-  free(array[position]->this);
+  free(array[position]);
 }

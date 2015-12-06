@@ -45,7 +45,7 @@
 int escreve_saida(FILE *fp, char *vid, int tk, int pX, int pY, int pZ, char tm)
 {
   static char pvid[MAX_ID_SIZE];
-  static int ptk = -1, ppx, ppy, ppz, savep = 1;
+  static int ptk = -1, ppx, ppy, ppz;
 
   int retval = 0;    /* valor retornado quando não há erro;
                       * se houver erro retval = -1
@@ -63,7 +63,6 @@ int escreve_saida(FILE *fp, char *vid, int tk, int pX, int pY, int pZ, char tm)
     fprintf(stderr, "Argumentos invalidos: Identificador de viatura nulo!\n");
     fprintf(stderr, "Chamada erronea:\t\t\t%s %d %d %d %d %c\n",
             vid, tk, pX, pY, pZ, tm);
-    savep = 0;
     retval = -1;
   } else if (tk < 0) {
     fprintf(stderr, "Argumentos invalidos: tempo negativo!\n");
@@ -132,7 +131,7 @@ int escreve_saida(FILE *fp, char *vid, int tk, int pX, int pY, int pZ, char tm)
 
     /* generate output */
     fprintf(fp, "%s %d %d %d %d %c\n", vid, tk, pX, pY, pZ, tm);
-    fprintf(stderr, "%s %d %d %d %d %c\n", vid, tk, pX, pY, pZ, tm);
+    /**fprintf(stderr, "%s %d %d %d %d %c\n", vid, tk, pX, pY, pZ, tm);*/
   }
 
   return(retval);
@@ -144,10 +143,10 @@ void PrintPath(FILE * outputfile, ListNode * carpath, ListNode * footpath, char 
 {
 
   ListNode * carpathaux, * footpathaux;
-  int x, y, z, time = -1, timecompare, px = -1, py = -1, pz = -1; /*px, py, px are the coordenates that resulted from the previous iteration*/
-  int position, pposition, parkingtime;
+  int x = 0, y = 0, z = 0, time = -1, timecompare, px = -1, py = -1, pz = -1; /*px, py, px are the coordenates that resulted from the previous iteration*/
+  int position, parkingtime;
   Array decoder = GetDecoder(parkinglot);
-  char direction, pdirection;
+  char direction = 'a', pdirection = 'a';
 
   carpathaux = carpath;
 
@@ -185,7 +184,6 @@ void PrintPath(FILE * outputfile, ListNode * carpath, ListNode * footpath, char 
             px = x;
             py = y;
             pz = z;
-            pposition = position;
             pdirection = direction;
     	}
 
@@ -227,7 +225,6 @@ void PrintPath(FILE * outputfile, ListNode * carpath, ListNode * footpath, char 
     px = x;
     py = y;
     pz = z;
-    pposition = position;
     pdirection = direction;
     }
 

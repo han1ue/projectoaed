@@ -1,9 +1,8 @@
 #include "Defs.h"
 
-typedef struct arraynode ArrayNode;
-typedef ArrayNode ** Array;
+typedef Item * Array;
 
 Array InitArray(int);
-Item GetArrayNodeItem(int, Array);
-Item ModifyArrayNodeItem(int, Item, Array);
+Item GetArrayNode(int, Array);
+void ModifyArrayNode(int, Item, Array);
 void DeleteNodeItem(int, Array);

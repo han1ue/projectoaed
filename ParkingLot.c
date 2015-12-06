@@ -29,7 +29,7 @@ Graph* GetGraph(ParkingLot* parkinglot)
 ParkingLot * InitParkingLot( FILE * mapconfig, int col, int row, int floors, int accesses )
 {
     char *** matrix;
-    int *vertices, i, *ramps;
+    int *vertices, *ramps;
     ParkingLot * parkinglot;
 
     vertices = (int*)malloc(sizeof(int));
@@ -43,13 +43,15 @@ ParkingLot * InitParkingLot( FILE * mapconfig, int col, int row, int floors, int
     parkinglot->freespots = 0;
     matrix = MatrixInit(vertices, ramps, mapconfig, col, row, floors); /*Creates string cointaining the map - its a 3d string */
     parkinglot->graphdecoder = GraphDecoderInit(matrix, col, row, floors, *vertices, &(parkinglot->freespots) ); /*Creates array cointaining the Decoder for the graph positions*/
-    parkinglot->g = GraphInit(*vertices, matrix, parkinglot->graphdecoder, col, row, floors);
+    parkinglot->g = GraphInit(*vertices, matrix, parkinglot->graphdecoder, col, row);
     parkinglot->accesseshead = InitAccesses(accesses, parkinglot->graphdecoder, *vertices);
     parkinglot->parkedcarshead = ListInit();
     parkinglot->queuehead = ListInit();
 
-    PrintGraph(GetGraph(parkinglot), *vertices);  /*prints the graph in the parkinglot */
-    FreeMatrix(matrix, col, row, floors);
+    /**PrintGraph(GetGraph(parkinglot), *vertices); */ /*prints the graph in the parkinglot */
+    FreeMatrix(matrix, col, row);
+    free(vertices);
+    free(ramps);
 
     return (parkinglot);
 }
@@ -102,7 +104,12 @@ char *** MatrixInit(int * vertices, int * ramps, FILE * mapconfig, int col, int 
     {
         for(a = 0; a < row; a++)
         {
-            fgets(string, MAX_STRING, mapconfig); /*Gets line "a" from file into "string"*/
+            /*Gets line "a" from file into "string"*/
+            if(fgets(string, MAX_STRING, mapconfig) == NULL)
+            {
+                printf("Error reading file.");
+                exit(0);
+            }
             for(b = 0; b < col; b++)
             {
                 /*For each character b (0 to col) in the line a (0 to row)
@@ -120,14 +127,14 @@ char *** MatrixInit(int * vertices, int * ramps, FILE * mapconfig, int col, int 
             if(fgets(string, MAX_STRING, mapconfig) == NULL)  /*Gets info about accesses */
             {
                 printf("Error reading the accesses info from file.");
-                exit(-1);
+                exit(0);
             }
             if(string[0] == 'A')
             {
                 if(sscanf(string, "%*s  %d %d %d %c\n", &posx, &posy, &posz, &type) != 4)
                 {
                     printf("Error reading the accesses info from file string.");
-                    exit(-1);
+                    exit(0);
                 }
                 matrix[posx][posy][posz] = type;
             }
@@ -150,7 +157,7 @@ char *** MatrixInit(int * vertices, int * ramps, FILE * mapconfig, int col, int 
 
 ListNode * InitAccesses(int accesses, Array decoder, int vertices)
 {
-    int i, *index;
+    int i, *index, counter = 0;
     char type;
   	ListNode* accesseshead = ListInit();
 
@@ -163,10 +170,16 @@ ListNode * InitAccesses(int accesses, Array decoder, int vertices)
           	VerifyMalloc((Item) index);
 
           	*index = i;
-
+            counter++;
             accesseshead = AddNodeToListHead(accesseshead, (Item) index);
         }
     }
+    if(counter != accesses)
+    {
+        printf("Error. Number of read accesses doesnt match info from file.");
+        exit(0);
+    }
+
     return accesseshead;
 }
 
@@ -212,9 +225,9 @@ int * InitRamps(int ramps, Array decoder, int vertices)
  * Returns: -
  *
  *****************************************************************************/
-void FreeMatrix(char *** matrix, int col, int row, int floors)
+void FreeMatrix(char *** matrix, int col, int row)
 {
-    int x, y, z;
+    int x, y;
 
     for(x=0; x < col; x++)
     {
@@ -289,4 +302,14 @@ void SetQueueHead(ParkingLot* parkinglot, ListNode* head)
 ListNode* GetQueueHead(ParkingLot* parkinglot)
 {
     return (parkinglot->queuehead);
+}
+
+void FreeParkingLot(ParkingLot * parkinglot)
+{
+  FreeDecoder( GetDecoder( parkinglot ), GetVertices( parkinglot ) );
+  FreeGraph( GetGraph( parkinglot ) ) ;
+  freeLinkedList( GetAccesses( parkinglot) );
+  freeLinkedList( GetQueueHead(parkinglot) );
+  FreeParkedCars( GetParkedListHead(parkinglot) );
+  free(parkinglot);
 }

@@ -14,7 +14,7 @@ void VerifyMalloc(Item pointer)
     if(pointer == NULL)
     {
         printf("Error allocating memory");
-        exit(-1);
+        exit(0);
     }
 }
 
@@ -50,15 +50,13 @@ FILE * OpenFile ( char *name, char *mode )
 
 ParkingLot * MapInit( FILE* mapconfig )
 {
-
-    int i;
     int col, row, floors, entries, accesses;
     ParkingLot* parkinglot; /*Pointer to struct */
 
     if (fscanf(mapconfig, "%d %d %d %d %d\n", &col, &row, &floors, &entries, &accesses) != 5)  /*If it can't read the 5 dimensions needed it exits the program*/
     {
         printf("Error reading map info.");
-        exit(-1);
+        exit(0);
     }
 
     parkinglot = InitParkingLot(mapconfig, col, row, floors, accesses); /*Creates pointer to the parking lot*/
@@ -75,17 +73,15 @@ int main( int argc, char *argv[])
 {
     FILE* mapconfig, *carconfig, *restconfig, *fpout; /*variables to the files being opened*/
     char*fileNameOut;
-    char* aux;
     char* mapfile = argv[1];
     char* carfile = argv[2];
     char* restfile = argv[3];
     ParkingLot* parkinglot; /*Pointer to the parkinglot struct */
-    ListNode * eventlist, * carlist;
-    int vertices, i, timeunit = 0; /*Because we need to handle cars  */
-    Array decoder;
+    int i, timeunit = 0; /*Because we need to handle cars  */
     char * extOut = ".pts";
     int finalflag = 0;
     int restflag = 1;
+    ListNode* resthead = ListInit();
 
     /*Verify number of arguments*/
     if(argc > 4 && argc < 3)
@@ -111,7 +107,10 @@ int main( int argc, char *argv[])
 
     /*Open the third file - restrictions config*/
     if(restflag == 1)
-    restconfig = OpenFile ( restfile, "r" );
+    {
+        restconfig = OpenFile ( restfile, "r" );
+        resthead = RestInit(restconfig);
+    }
 
     OcuppyParkedCars(parkinglot, carconfig) ; /*Occupies the positions of the cars already parked when the time starts */
 
@@ -119,6 +118,7 @@ int main( int argc, char *argv[])
 
      /* Determine output filename */
     fileNameOut = ( char* )malloc( ( strlen( argv[1] ) + 2 ) * sizeof( char ) );
+    VerifyMalloc((Item) fileNameOut);
     if( fileNameOut == NULL ){
         printf("Memory allocation error for fileNameOut.\n" );
         exit(0);
@@ -129,16 +129,22 @@ int main( int argc, char *argv[])
     strcat(fileNameOut, extOut);
     /* Open output file */
     fpout  = OpenFile(fileNameOut, "w");
+    /* Frees output file */
+    free(fileNameOut);
 
     while (finalflag == 0)
     {
         finalflag = HandleCar(parkinglot, carconfig, fpout, timeunit);
-        //if(restflag == 1)
-          //  HandleRest(parkinglot, restfile);
+        if(restflag == 1)
+           resthead = HandleRest(resthead, parkinglot, timeunit, restconfig);
 
         timeunit++;
     }
 
+    FreeParkingLot(parkinglot);
+
+    fclose(carconfig);
     fclose(fpout);
-    return 0;
+
+    exit(0);
 }

@@ -50,6 +50,7 @@ ListNode * RemoveListHead(ListNode * head)
 void AddNodeToTail(ListNode* head, Item this)
 {
     ListNode* newnode = (ListNode*)malloc(sizeof(ListNode));
+    VerifyMalloc((Item) newnode);
     ListNode* aux;
     newnode->this = this;
 
@@ -68,7 +69,7 @@ void ModifyPointerNext(ListNode* node, ListNode* pointer)
     if(node == NULL || pointer == NULL)
     {
         printf("Error. One of the nodes you're trying to use is NULL.");
-        exit(-1);
+        exit(0);
     }
 
     node->next = pointer;
@@ -81,7 +82,7 @@ void InsertNodeAfter(ListNode* toinsert, ListNode* ref)
     if(ref == NULL || toinsert == NULL)
     {
         printf("Error. One of the nodes you're trying to use is NULL.");
-        exit(-1);
+        exit(0);
     }
 
     toinsert->next = ref->next;
@@ -167,8 +168,6 @@ ListNode * getNextNodeLinkedList(ListNode * node)
 ListNode * insertSortedLinkedList(ListNode * head, Item this, int (* CompareFunction)(Item item1, Item item2, int direction), int direction)
 {
     ListNode * new, * aux;
-    int a, b;
-    int thead, taux, tatual;
 
     /* Memory allocation                                            */
     new = (ListNode *) malloc(sizeof(ListNode));
@@ -209,7 +208,7 @@ void PrintIntList(ListNode* head)
     if(aux == NULL)
     {
         printf("Error. You can't print an empty list.");
-        exit(-1);
+        exit(0);
     }
     while(aux!=NULL)
     {

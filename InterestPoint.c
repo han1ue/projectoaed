@@ -28,8 +28,7 @@ struct interestpoint
 Array GraphDecoderInit(char *** matrix, int col, int row, int floors, int vertices, int* freespots)
 {
     Array graphdecoder;
-    InterestPoint* IP, *aux;
-    Item item;
+    InterestPoint* IP;
 
     int x, y, z, i = 0;
 
@@ -57,7 +56,7 @@ Array GraphDecoderInit(char *** matrix, int col, int row, int floors, int vertic
                     IP->type = matrix[x][y][z];
                   	IP->flagres = 0;
                     /*Calls function that changes the item in the position i to the InterestPoint created above */
-                    item = ModifyArrayNodeItem(i, (Item) IP, graphdecoder); //retirar ele devolver item depois
+                    ModifyArrayNode(i, (Item) IP, graphdecoder);
                     i++;
                 }
             }
@@ -82,7 +81,7 @@ Array GraphDecoderInit(char *** matrix, int col, int row, int floors, int vertic
 int GetIP_Coord(int i, char coord, Array decoder)
 {
     InterestPoint * aux;
-    aux = ( (InterestPoint *)GetArrayNodeItem(i, decoder) );
+    aux = ( (InterestPoint *)GetArrayNode(i, decoder) );
 
     if(coord == 'x')
         return aux->x;
@@ -93,7 +92,7 @@ int GetIP_Coord(int i, char coord, Array decoder)
     else
     {
         printf("The coordenate you are trying to get does not exist.");
-        exit(-1);
+        exit(0);
     }
 }
 
@@ -110,7 +109,7 @@ int GetIP_Coord(int i, char coord, Array decoder)
 char GetIP_Type(int i, Array decoder)
 {
     InterestPoint * aux;
-    aux = (InterestPoint *) GetArrayNodeItem(i, decoder);
+    aux = (InterestPoint *) GetArrayNode(i, decoder);
 
     return aux->type;
 }
@@ -129,7 +128,7 @@ char GetIP_Type(int i, Array decoder)
 void ChangeIP_Type(int i, Array decoder, char type)
 {
   	InterestPoint * aux;
-    aux = (InterestPoint *) GetArrayNodeItem(i, decoder);
+    aux = (InterestPoint *) GetArrayNode(i, decoder);
   	aux->type = type;
 }
 
@@ -143,10 +142,10 @@ void ChangeIP_Type(int i, Array decoder, char type)
  *
  *****************************************************************************/
 
-int GetFlagRes(int i, Array decoder)
+int GetIP_Flagres(int i, Array decoder)
 {
     InterestPoint * aux;
-    aux = (InterestPoint *) GetArrayNodeItem(i, decoder);
+    aux = (InterestPoint *) GetArrayNode(i, decoder);
 
     return aux->flagres;
 }
@@ -173,11 +172,8 @@ int FindIP (int vertices, int x, int y, int z, Array decoder)
         }
     }
 
-    if(IP == vertices)
-    {
-        printf("Error finding vertice with coordenates (x,y,z).");
-        //exit(-1);
-    }
+    printf("Error finding vertice with coordenates (x,y,z).");
+    exit(0);
 }
 
 /******************************************************************************
@@ -191,11 +187,11 @@ int FindIP (int vertices, int x, int y, int z, Array decoder)
  *
  *****************************************************************************/
 
-void OccupyPos(int i, Array decoder, int vertices)
+void OccupyPos(int i, Array decoder)
 {
     InterestPoint * IP;
 
-    IP = (InterestPoint*) GetArrayNodeItem(i, decoder);
+    IP = (InterestPoint*) GetArrayNode(i, decoder);
     IP->type = 'x';
 }
 
@@ -210,11 +206,11 @@ void OccupyPos(int i, Array decoder, int vertices)
  *
  *****************************************************************************/
 
-void FreePos(int i, Array decoder, int vertices)
+void FreePos(int i, Array decoder)
 {
     InterestPoint * IP;
 
-    IP = (InterestPoint*) GetArrayNodeItem(i, decoder);
+    IP = (InterestPoint*) GetArrayNode(i, decoder);
     IP->type = '.';
 }
 
@@ -233,7 +229,7 @@ void RestrictPos(int i, Array decoder)
 {
     InterestPoint * IP;
 
-    IP = (InterestPoint*) GetArrayNodeItem(i, decoder);
+    IP = (InterestPoint*) GetArrayNode(i, decoder);
     IP->flagres = 1;
 }
 
@@ -252,7 +248,7 @@ void ReleasePos(int i, Array decoder)
 {
     InterestPoint * IP;
 
-    IP = (InterestPoint*) GetArrayNodeItem(i, decoder);
+    IP = (InterestPoint*) GetArrayNode(i, decoder);
     IP->flagres = 0;
 }
 
@@ -268,10 +264,23 @@ ListNode * FindFreeSpots(Array decoder, int vertices)
     if( GetIP_Type(i, decoder) == '.' )
     {
       	vertice = (int*) malloc ( sizeof(int) );
+      	VerifyMalloc((Item) vertice);
       	*vertice = i;
         freespots = AddNodeToListHead(freespots, (Item) vertice);
     }
   }
 
   return freespots;
+}
+
+
+void FreeDecoder( Array decoder, int size )
+{
+  int i;
+
+  for( i = 0; i < size; i++)
+    {
+    	free( GetArrayNode(i, decoder) ); /*Frees the IP in of each vertice */
+    }
+  free(decoder); /*Frees the Array */
 }

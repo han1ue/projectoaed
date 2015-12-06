@@ -17,13 +17,13 @@ struct graph
  *
  *****************************************************************************/
 
-Graph *GraphInit(int vertices, char *** matrix, Array decoder, int col, int row, int floors)
+Graph *GraphInit(int vertices, char *** matrix, Array decoder, int col, int row)
 {
     Graph *G = (Graph*) malloc( sizeof(Graph) ); /*antes estava sizeof(struct graph)*/
     VerifyMalloc( (Item) G );
     G->v = vertices;
     G->e = 0;
-    G->adj = InitAdj(vertices, matrix, decoder, col, row, floors);
+    G->adj = InitAdj(vertices, matrix, decoder, col, row);
     return G;
 }
 
@@ -35,13 +35,18 @@ void PrintGraph(Graph* g, int vertices)
     char test;
 
     printf("Do you want to print all the vertices? [y/n]");
-    scanf("%c", &test);
+
+    if(scanf("%c", &test) != 1)
+        {
+            printf("Error scanning your input.");
+            exit(0);
+        }
 
     if (test == 'y'){
         for (i=0; i<vertices; i++)
         {
             printf("V:%d --> ", i);  /*Prints the head of the adj list we are printing */
-            head = (ListNode*) GetArrayNodeItem(i, g->adj);
+            head = (ListNode*) GetArrayNode(i, g->adj);
             if (head != NULL)
                 PrintIntList(head);
             else
@@ -54,9 +59,13 @@ void PrintGraph(Graph* g, int vertices)
     else if (test == 'n')
     {
         printf("Which one do you want to print?");
-        scanf("%d", &i);
+        if(scanf("%d", &i) != 1)
+        {
+            printf("Error scanning your input.");
+            exit(0);
+        }
         printf("V:%d --> ", i);  /*Prints the head of the adj list we are printing */
-        head = (ListNode*) GetArrayNodeItem(i, g->adj);
+        head = (ListNode*) GetArrayNode(i, g->adj);
         PrintIntList(head);
         printf("\n");
     }
@@ -71,6 +80,15 @@ int GetGraphVertices(Graph *g)
 ListNode* GetGraphAdjHead(Graph *g, int i)
 {
     ListNode* AdjHeadi;
-    AdjHeadi = (ListNode*) GetArrayNodeItem(i, g->adj);
+    AdjHeadi = (ListNode*) GetArrayNode(i, g->adj);
     return AdjHeadi;
 }
+
+
+void FreeGraph(Graph * g)
+{
+  freeAdj(g->adj, GetGraphVertices(g) );
+  free(g);
+}
+
+

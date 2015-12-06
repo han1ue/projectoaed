@@ -23,7 +23,7 @@ void OcuppyParkedCars(ParkingLot* parkinglot, FILE* carfile)
             if (type == 'S')
             {
                 i = FindIP(GetVertices(parkinglot), x, y, z, GetDecoder(parkinglot));
-                OccupyPos(i, GetDecoder(parkinglot), GetVertices(parkinglot));
+                OccupyPos(i, GetDecoder(parkinglot));
             }
         }
 
@@ -34,7 +34,9 @@ void AddParkedCar(char* carname, int x, int y, int z, ParkingLot* parkinglot)
 {
 
     ParkedCar* parkedcar = (ParkedCar*)malloc(sizeof(ParkedCar));
+    VerifyMalloc((Item) parkedcar);
     parkedcar->carid = (char*) malloc( sizeof(char) * (strlen(carname) + 1) );
+    VerifyMalloc((Item) parkedcar->carid);
     parkedcar->x = x;
     parkedcar->y = y;
     parkedcar->z = z;
@@ -74,4 +76,17 @@ void PrintParkedCars(ParkingLot * parkinglot)
 
         printf("%s %d %d %d\n", parkedcar->carid, parkedcar->x, parkedcar->y, parkedcar->z);
     }
+}
+
+void FreeParkedCars( ListNode* head )
+{
+    ListNode* aux;
+    ParkedCar* car;
+
+    for(aux = head; aux!=NULL; aux= getNextNodeLinkedList(aux))
+    {
+        car = (ParkedCar*) getItemLinkedList(aux);
+        free(car->carid);
+    }
+    freeLinkedList(head);
 }

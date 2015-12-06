@@ -4,9 +4,13 @@
 
 
 typedef struct reststruct Rest;
-ListNode * RestListInit( FILE* carconfig, FILE* resconfig );
-int GetRestTime(Rest* Rest);
-int CompareRestTime(Item Rest1, Item Rest2, int direction);
-char GetRestFlag(Rest* Rest);
-int GetRestCoord(Rest* Rest, char coord);
-void PrintRestList(ListNode*);
+ListNode* RestInit(FILE*);
+ListNode * HandleRest(ListNode*, ParkingLot*, int, FILE*);
+int GetRestTime(Rest*);
+int CompareRestTime(Item, Item, int);
+char GetRestFlag(Rest*);
+int GetRestCoord(Rest*, char);
+int IsFloorRestricted( int, ParkingLot *);
+void RestrictWholeFloor( int, ParkingLot *);
+void ReleaseWholeFloor( int, ParkingLot *);
+/*void PrintRestList(ListNode*);*/

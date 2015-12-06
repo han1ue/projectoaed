@@ -25,7 +25,7 @@ int Comparison(Item a, Item b)
 
 void Dijsktra(Graph *G, int s, int* st, int* wt, int weight_mult_factor, Array decoder)
 {
-    int v, w, vertices, *newint, weight, n_elements;
+    int v, w, vertices, *newint, weight;
     ListNode * t;
     Heap* heap;
     vertices = GetGraphVertices(G);
@@ -37,10 +37,10 @@ void Dijsktra(Graph *G, int s, int* st, int* wt, int weight_mult_factor, Array d
         st[v] = -1;
         wt[v] = MAX_DISTANCE;
 
-        newint =	(int*) malloc(sizeof(int));
+        newint = (int*) malloc(sizeof(int));
         VerifyMalloc((Item) newint);
         *newint = v;
-        HeapInit(heap, (Item) newint); //Se nao funcionar pode ser esta wannabe passagem por referencia
+        HeapInit(heap, (Item) newint); /*Se nao funcionar pode ser esta wannabe passagem por referencia*/
     }
     wt[s] = 0;
     st[s] = s;
@@ -49,13 +49,13 @@ void Dijsktra(Graph *G, int s, int* st, int* wt, int weight_mult_factor, Array d
     while (HeapEmpty(heap))
     {
 
-      // printf("antes do removemin \n");
-      // PrintMe(heap);
+      /** printf("antes do removemin \n"); */
+      /** PrintMe(heap); */
 
        v = *((int *)RemoveMin(heap, wt)); /*Removes the min value form the heap, returns it, and makes the array an heap again*/
 
-       //printf("depois do removemin \n");
-      // PrintMe(heap);
+       /**printf("depois do removemin \n");*/
+       /**PrintMe(heap);*/
 
         if (wt[v] != MAX_DISTANCE && GetIP_Type(v, decoder) != '.') /* != '.' because it cant circulate over parking spots */
         {
@@ -68,24 +68,25 @@ void Dijsktra(Graph *G, int s, int* st, int* wt, int weight_mult_factor, Array d
                     w = GetAdjacencyVertice (adjacency);
                     weight = GetAdjacencyWeight(adjacency);
 
-                    if( wt[w] > (wt[v] + ( weight * weight_mult_factor)) && GetFlagRes(w, decoder) != 1 && CheckRamp(v, w, st, decoder) && GetIP_Type(w, decoder) != 'x')  /*If he's walking weight_mult_factor = 3; if he's on the car weight_mult_factor = 1;*/
+                    if( wt[w] > (wt[v] + ( weight * weight_mult_factor)) && GetIP_Flagres(w, decoder) != 1 && CheckRamp(v, w, st, decoder) && GetIP_Type(w, decoder) != 'x')  /*If he's walking weight_mult_factor = 3; if he's on the car weight_mult_factor = 1;*/
                     {
                            wt[w] = wt[v] + ( weight * weight_mult_factor);
                            st[w] = v;
                            FixUp(heap, w, wt);
-                          // printf("Fix up \n");
-                          // PrintMe(heap);
+                          /** printf("Fix up \n"); */
+                          /** PrintMe(heap);*/
                     }
                 }
             }
         }
     }
+    FreeHeap(heap, vertices);
 }
 
 int PathCalculator(Graph *G, int entry, ListNode** carpath, ListNode** footpath, Array decoder, ListNode * accesseshead, char objective, int vertices)
 {
   int *stcar, *wtcar, *stfoot, *wtfoot, *staux, *wtaux;
-  int accesspos, bestpathweight = MAX_DISTANCE, pathweight, index, bestparkingspot, bestfoot;
+  int accesspos, bestpathweight = MAX_DISTANCE, pathweight = 0, index = 0, bestparkingspot = 0, bestfoot = 0;
   char accesstype;
   ListNode * freespotshead, *auxaccess, *freespotsaux;
 
@@ -107,23 +108,23 @@ int PathCalculator(Graph *G, int entry, ListNode** carpath, ListNode** footpath,
   VerifyMalloc((Item) staux);
 
 
-  Dijsktra(G, entry, stcar, wtcar, 1, decoder); //Dijsktra for path inside the car
+  Dijsktra(G, entry, stcar, wtcar, 1, decoder); /*Dijsktra for path inside the car*/
 
 
   freespotshead = FindFreeSpots(decoder, vertices);
-  //PrintIntList(freespotshead);
+  /** PrintIntList(freespotshead); */
   auxaccess = accesseshead;
-  //printf("Lista de acessos: \n");
-  //PrintIntList(accesseshead);
+  /** printf("Lista de acessos: \n");*/
+  /** PrintIntList(accesseshead); */
 
   while(auxaccess != NULL) /*Goes through the list of accesses and calculates the path from the wanted access to every parking spot */
   {
     accesspos =  *((int *)(getItemLinkedList(auxaccess)));
-    //PrintIntList(auxaccess);
+    /**PrintIntList(auxaccess);*/
     accesstype = GetIP_Type(accesspos, decoder);
     if(accesstype == objective )
     {
-     	 Dijsktra(G, accesspos , staux, wtaux, 3, decoder); //Dijsktra for path inside the car
+     	 Dijsktra(G, accesspos , staux, wtaux, 3, decoder); /*Dijsktra for path on foot*/
 
         freespotsaux = freespotshead;
       	while(freespotsaux != NULL)
@@ -159,14 +160,21 @@ int PathCalculator(Graph *G, int entry, ListNode** carpath, ListNode** footpath,
   	auxaccess = getNextNodeLinkedList(auxaccess);
   }
 
-  // NÃO ESQUECER DE FAZER FREE NOS FREESPOTS
+  freeLinkedList(freespotshead);
   CreatePathList(carpath, stcar, bestparkingspot);
   CreatePathListBackwards(footpath, stfoot, bestparkingspot);
   /*
-
   PrintIntList(*carpath);
 
   PrintIntList(*footpath);*/
+
+  free(wtcar);
+  free(stcar);
+  free(wtfoot);
+  free(stfoot);
+  free(wtaux);
+  free(staux);
+
 
   return bestpathweight;
 }
@@ -200,12 +208,14 @@ void CreatePathList(ListNode** carpath, int* stcar, int bestparkingspot)
    for(pos = bestparkingspot; pos != stcar[pos]; pos = stcar[pos])
    {
        i = (int*)malloc(sizeof(int));
+       VerifyMalloc((Item) i);
       *i = pos;
       *carpath = AddNodeToListHead(*carpath, (Item) i);
    }
 
-   //Last case
+   /*Last case*/
     i = (int*)malloc(sizeof(int));
+    VerifyMalloc((Item) i);
     *i = pos;
     *carpath = AddNodeToListHead(*carpath, (Item) i);
 
@@ -214,7 +224,7 @@ void CreatePathList(ListNode** carpath, int* stcar, int bestparkingspot)
 
 int CheckRamp(int v, int w, int * st, Array decoder)
 {
-    char type_v, type_w, type_st_v;
+    char type_v, type_st_v;
 
     type_v = GetIP_Type(v, decoder);
 

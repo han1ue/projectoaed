@@ -6,3 +6,4 @@ void CreatePathListBackwards(ListNode**, int*, int);
 void CreatePathList(ListNode**, int*, int);
 int CheckRamp(int, int, int *, Array);
 int CheckConnection(char, int);
+void CpyIntVector(int*, int*, int );

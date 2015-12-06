@@ -62,6 +62,7 @@ Heap *NewHeap(int size, int (*comparison) (Item, Item))
   Heap *h;
 
   h = (Heap *) malloc(sizeof(Heap));
+  VerifyMalloc((Item) h);
   if (h == ((Heap *) NULL)) {
     fprintf(stderr, "Error in malloc of heap\n");
     exit(1);
@@ -71,6 +72,7 @@ Heap *NewHeap(int size, int (*comparison) (Item, Item))
   h->comparison = comparison;
   h->size = size;
   h->heapdata = (Item *) malloc(size * sizeof(Item));
+  VerifyMalloc((Item) h->heapdata);
   if (h->heapdata == ((Item *) NULL)) {
     fprintf(stderr, "Error in malloc of heap data\n");
     exit(1);
@@ -123,7 +125,7 @@ void FixUp(Heap * h, int a, int* wt)
 
   for(k=0; a != *((int*)h->heapdata[k]); k++);
 
-  while ((k > 0) && (h->comparison) ((Item) &wt[*((int*)h->heapdata[(k - 1) / 2])], (Item) &wt[*((int*)h->heapdata[k])])) //Se der bug pode ser dos pointers a entrar aqui
+  while ((k > 0) && (h->comparison) ((Item) &wt[*((int*)h->heapdata[(k - 1) / 2])], (Item) &wt[*((int*)h->heapdata[k])]))
   {
 
 
@@ -267,11 +269,11 @@ int IsAllInfinity(Heap* h)
  *
  *****************************************************************************/
 
-void FreeHeap(Heap *h)
+void FreeHeap(Heap *h, int vertices)
 {
     int c;
 
-    for (c=0; c < h->n_elements; c++)
+    for (c=0; c < vertices; c++)
     {
         free(h->heapdata[c]);
     }
@@ -279,5 +281,4 @@ void FreeHeap(Heap *h)
     free (h);
 
     return;
-
 }
